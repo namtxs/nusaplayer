@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": "20.x"
+  },
   "author": "NusaPlayer contributors",
   "keywords": [
     "nusaplayer",
@@ -16,6 +19,7 @@
     "dev:ui": "pnpm --filter=@nusaplayer/ui run start",
     "build:core": "pnpm --filter=@nusaplayer/core run build",
     "build:docs": "pnpm --filter=@nusaplayer/docs run build",
+    "build:vercel": "pnpm --filter=@nusaplayer/docs... --filter=!@nusaplayer/docs run build && pnpm run cp:ui && pnpm --filter=@nusaplayer/docs run build",
     "build:plugins": "pnpm --filter=@nusaplayer/plugins run build",
     "build:ui": "pnpm --filter=@nusaplayer/ui run build",
     "build": "pnpm --filter=!@nusaplayer/docs run build && pnpm run cp:ui",

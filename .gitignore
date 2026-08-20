@@ -10,5 +10,6 @@ dist
 .next
 out
 .nx
+.vercel
 tmp
 
