@@ -39,8 +39,8 @@ export default function StreamTester() {
   const player = useRef<Player>()
   const mountRef = useRef<HTMLDivElement>(null)
   const createGen = useRef(0)
-  const [input, setInput] = useState(DEMO.mp4)
-  const [format, setFormat] = useState('auto')
+  const [input, setInput] = useState<string>(DEMO.mp4)
+  const [format, setFormat] = useState<string>('auto')
   const [active, setActive] = useState('mp4')
   const [busy, setBusy] = useState(false)
 
