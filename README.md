@@ -9,6 +9,8 @@
 
 HTML5 video player. Plugins for HLS, DASH, FLV, danmaku, playlist, and React.
 
+[Docs](https://nusaplayer.vercel.app/) · [Playground](https://nusaplayer.vercel.app/playground/) · [Streams](https://nusaplayer.vercel.app/player/)
+
 ```js
 import Player from '@nusaplayer/core'
 import ui from '@nusaplayer/ui'
@@ -76,14 +78,14 @@ Standalone demo: http://localhost:5173/
 pnpm --filter=@nusaplayer/docs start
 ```
 
-Docs: http://localhost:3000/
+Local docs: http://localhost:3000/ · live: [nusaplayer.vercel.app](https://nusaplayer.vercel.app/)
 
 | | |
 | --- | --- |
-| `/` | live player |
-| `/docs` | manual |
-| `/playground` | samples |
-| `/player` | stream tester |
+| [`/`](https://nusaplayer.vercel.app/) | live player |
+| [`/docs`](https://nusaplayer.vercel.app/docs/) | manual |
+| [`/playground`](https://nusaplayer.vercel.app/playground/) | samples |
+| [`/player`](https://nusaplayer.vercel.app/player/) | stream tester |
 
 | Command | |
 | --- | --- |
