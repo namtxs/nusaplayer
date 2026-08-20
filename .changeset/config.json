@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@nusaplayer/full"]
+  "ignore": ["@nusaplayer/full", "@nusaplayer/thumbnails-tool"]
 }

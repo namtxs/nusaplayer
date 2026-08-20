@@ -1,6 +1,6 @@
 {
   "name": "@nusaplayer/hls",
-  "version": "1.2.28-beta.1",
+  "version": "1.0.0",
   "description": "Hls plugin for NusaPlayer",
   "type": "module",
   "main": "./dist/index.es.js",

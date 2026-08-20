@@ -1,6 +1,6 @@
 {
   "name": "@nusaplayer/torrent",
-  "version": "1.2.25-beta.2",
+  "version": "1.0.0",
   "description": "Torrent plugin for NusaPlayer.",
   "type": "module",
   "main": "./dist/index.es.js",

@@ -1,6 +1,6 @@
 {
   "name": "@nusaplayer/danmaku",
-  "version": "1.2.26-beta.0",
+  "version": "1.0.0",
   "description": "Danmaku plugin for NusaPlayer",
   "type": "module",
   "main": "./dist/index.es.js",
