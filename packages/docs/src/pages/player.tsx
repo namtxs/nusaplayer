@@ -1,4 +1,4 @@
-import StreamTester from './components/player'
+import StreamTester from '../views/player'
 
 export default function StreamsPage() {
   return (

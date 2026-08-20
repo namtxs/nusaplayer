@@ -6,7 +6,7 @@ import mpegts from '@nusaplayer/mpegts'
 import ui from '@nusaplayer/ui'
 import Danmaku from '@nusaplayer/danmaku'
 import { Playlist } from '@nusaplayer/plugins'
-import { DEMO, HIGHLIGHTS } from '../../samples'
+import { DEMO, HIGHLIGHTS } from '../samples'
 
 const plugins = [
   ui({

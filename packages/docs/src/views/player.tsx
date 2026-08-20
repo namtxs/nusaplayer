@@ -8,7 +8,7 @@ import mpegts from '@nusaplayer/mpegts'
 import torrent from '@nusaplayer/torrent'
 import Danmaku from '@nusaplayer/danmaku'
 import { Chromecast } from '@nusaplayer/plugins'
-import { DEMO, SAMPLE_SOURCES } from '../../samples'
+import { DEMO, SAMPLE_SOURCES } from '../samples'
 import style from './player.module.scss'
 
 const userPreferencesPlugin: PlayerPlugin = {
