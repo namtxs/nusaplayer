@@ -1,0 +1,167 @@
+# Install
+
+NusaPlayer is a plugin-based HTML5 player. `@nusaplayer/core` is the engine. UI, streaming, danmaku, and extras are separate packages you opt into with `.use([...]).create()`.
+
+<Callout type="info">
+  Edit code on the [Playground](/playground). Test stream URLs on [Streams](/player). The Oceans MP4 demo uses `/demo/en.srt`, `/demo/id.srt`, and `/demo/danmaku.xml` from this repo.
+</Callout>
+
+## Packages
+
+| Package | Role |
+| --- | --- |
+| `@nusaplayer/core` | engine, events, `Player.make` |
+| `@nusaplayer/ui` | controls, theme, subtitle, screenshot, PiP |
+| `@nusaplayer/hls` | HLS via `hls.js` |
+| `@nusaplayer/dash` | DASH via `dash.js` |
+| `@nusaplayer/mpegts` | FLV / MPEG-TS via `mpegts.js` |
+| `@nusaplayer/shaka` | Shaka Player |
+| `@nusaplayer/torrent` | WebTorrent |
+| `@nusaplayer/danmaku` | danmaku + sender |
+| `@nusaplayer/plugins` | playlist, Chromecast, AirPlay, ads, VTT thumbs |
+| `@nusaplayer/react` | React wrapper |
+| `@nusaplayer/full` | one UMD bundle (core + ui + loaders) |
+
+UMD globals: `NusaPlayer`, `NusaUI`, `NusaHls`, `NusaDash`, `NusaMpegts`, `NusaShaka`, `NusaTorrent`, `NusaDanmaku`.
+
+<Tabs items={['npm', 'script', 'full bundle']}>
+
+<Tab>
+```shell
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/hls hls.js
+```
+
+```js filename="app.js"
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import hls from '@nusaplayer/hls'
+
+const player = Player.make('#player', {
+  lang: 'en',
+  source: {
+    title: "Disney's Oceans",
+    src: 'https://vjs.zencdn.net/v/oceans.mp4',
+    poster: 'https://vjs.zencdn.net/v/oceans.png'
+  }
+})
+  .use([
+    ui({
+      keyboard: { global: true },
+      screenshot: true,
+      pictureInPicture: true,
+      subtitle: {
+        source: [
+          { name: 'English', default: true, src: '/demo/en.srt' },
+          { name: 'Indonesia', src: '/demo/id.srt' }
+        ]
+      }
+    }),
+    hls({ forceHLS: true })
+  ])
+  .create()
+```
+
+</Tab>
+
+<Tab>
+```html filename="app.html"
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/core@latest/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/ui@latest/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/hls@latest/dist/index.min.js"></script>
+
+<div id="player"></div>
+<script>
+  NusaPlayer.make('#player', {
+    source: {
+      title: "Disney's Oceans",
+      src: 'https://vjs.zencdn.net/v/oceans.mp4',
+      poster: 'https://vjs.zencdn.net/v/oceans.png'
+    }
+  })
+    .use([
+      NusaUI({
+        keyboard: { global: true },
+        screenshot: true,
+        pictureInPicture: true
+      }),
+      NusaHls({
+        forceHLS: true,
+        library: 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js'
+      })
+    ])
+    .create()
+</script>
+```
+</Tab>
+
+<Tab>
+```html filename="app.html"
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/full@latest/dist/index.min.js"></script>
+<div id="player"></div>
+<script>
+  NusaPlayer.make('#player', {
+    source: {
+      src: 'https://vjs.zencdn.net/v/oceans.mp4',
+      poster: 'https://vjs.zencdn.net/v/oceans.png'
+    }
+  })
+    .use([
+      NusaUI(),
+      NusaHls({
+        forceHLS: true,
+        library: 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js'
+      }),
+      NusaDash({ library: 'https://cdn.dashjs.org/v4.7.4/dash.all.min.js' }),
+      NusaMpegts({ library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js' }),
+      NusaTorrent({ library: 'https://cdn.jsdelivr.net/npm/webtorrent@0.98.18/webtorrent.min.js' })
+    ])
+    .create()
+</script>
+```
+</Tab>
+
+</Tabs>
+
+## How plugins attach
+
+```js
+Player.make(container, options)
+  .use([pluginA, pluginB])
+  .create()
+```
+
+1. `make` builds the instance (DOM is not mounted yet).
+2. `use` queues plugins.
+3. `create` renders the `<video>`, applies plugins, then loads `options.source` if `src` is set.
+
+After create, plugin instances live on `player.context` using each plugin `key`:
+
+```js
+player.context.ui
+player.context.hls
+player.context.danmaku
+player.context.playlist
+```
+
+## Streaming samples
+
+| Format | URL |
+| --- | --- |
+| MP4 | `https://vjs.zencdn.net/v/oceans.mp4` |
+| HLS | `https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8` |
+| DASH | `https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd` |
+| HLS multi | `https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8` |
+| DASH multi | `https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd` |
+| WebTorrent | `https://webtorrent.io/torrents/sintel.torrent` |
+
+HLS / DASH / FLV servers must send CORS headers. Safari can play HLS natively; set `forceHLS: true` if you still want hls.js quality menus.
+
+## Develop this repo
+
+```bash
+pnpm i
+pnpm run build
+pnpm run dev:exam
+```
+
+Standalone demo: http://localhost:5173/

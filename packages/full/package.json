@@ -1,0 +1,47 @@
+{
+  "name": "@nusaplayer/full",
+  "version": "0.0.1-beta.28",
+  "description": "Do More, Keep it simple.",
+  "type": "module",
+  "main": "./dist/index.min.js",
+  "types": "./dist/src/index.d.ts",
+  "sideEffects": false,
+  "author": "NusaPlayer contributors",
+  "keywords": [
+    "nusaplayer",
+    "video-player",
+    "html5-player"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "start": "echo empty",
+    "tsc": "tsc --noEmit && echo",
+    "build": "vite build && tsc --emitDeclarationOnly"
+  },
+  "dependencies": {
+    "@nusaplayer/core": "workspace:*",
+    "@nusaplayer/dash": "workspace:*",
+    "@nusaplayer/hls": "workspace:*",
+    "@nusaplayer/mpegts": "workspace:*",
+    "@nusaplayer/shaka": "workspace:*",
+    "@nusaplayer/ui": "workspace:*",
+    "@nusaplayer/torrent": "workspace:*"
+  },
+  "peerDependencies": {
+    "hls.js": "*",
+    "dashjs": "*",
+    "mpegts.js": "*",
+    "shaka-player": "^3",
+    "webtorrent": "0.98.18"
+  },
+  "files": [
+    "dist"
+  ],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not op_mini all",
+    "IE 11"
+  ]
+}

@@ -1,0 +1,41 @@
+# @nusaplayer/torrent
+
+Play a `.torrent` or magnet URI in the browser with [WebTorrent](https://github.com/webtorrent/webtorrent). **Pin `webtorrent@0.98.18`.**
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/torrent webtorrent@0.98.18
+```
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import torrent from '@nusaplayer/torrent'
+
+Player.make('#player', {
+  source: {
+    title: 'Sintel',
+    src: 'https://webtorrent.io/torrents/sintel.torrent'
+  }
+})
+  .use([
+    ui(),
+    torrent({ library: 'https://cdn.jsdelivr.net/npm/webtorrent@0.98.18/webtorrent.min.js' })
+  ])
+  .create()
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/torrent@latest/dist/index.min.js"></script>
+<script>
+  NusaPlayer.make('#player', {
+    source: { src: 'https://webtorrent.io/torrents/sintel.torrent' }
+  })
+    .use([
+      NusaUI(),
+      NusaTorrent({ library: 'https://cdn.jsdelivr.net/npm/webtorrent@0.98.18/webtorrent.min.js' })
+    ])
+    .create()
+</script>
+```
+
+WebTorrent needs WebRTC and public trackers. First buffer can take a while. Instance: `player.context.torrent`.

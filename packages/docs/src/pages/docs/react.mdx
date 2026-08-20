@@ -1,0 +1,64 @@
+# @nusaplayer/react
+
+React wrapper around `Player.make`. **Not compatible with React Strict Mode** (`reactStrictMode: false` in Next.js). Live samples: [Playground](/playground).
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/react
+```
+
+## Usage
+
+```tsx
+import { useRef, useState } from 'react'
+import type Player from '@nusaplayer/core'
+import ReactPlayer from '@nusaplayer/react'
+import ui from '@nusaplayer/ui'
+import hls from '@nusaplayer/hls'
+
+const plugins = [
+  ui({
+    pictureInPicture: true,
+    screenshot: true,
+    keyboard: { global: true }
+  }),
+  hls({ forceHLS: true })
+]
+
+export function PlayPage() {
+  const player = useRef<Player>(null)
+  const [source, setSource] = useState({
+    src: 'https://vjs.zencdn.net/v/oceans.mp4',
+    poster: 'https://vjs.zencdn.net/v/oceans.png',
+    title: "Disney's Oceans"
+  })
+
+  return (
+    <ReactPlayer
+      ref={player}
+      plugins={plugins}
+      source={source}
+      autoplay={false}
+      volume={0.8}
+      onEvent={(e) => console.log(e.type)}
+    />
+  )
+}
+```
+
+`source` may be a `Promise<Source>` — useful when the URL comes from an API.
+
+## Props
+
+Extends `PlayerOptions` except `source` is optional / thenable.
+
+| Prop | Type | Notes |
+| --- | --- | --- |
+| `plugins` | `PlayerPlugin[]` | Created **once** when the node mounts. Do not recreate the array every render if you can avoid it. |
+| `source` | `Source \| Promise<Source>` | Calls `changeSource` when `src` changes |
+| `playing` | `boolean` | Imperative play / pause |
+| `duration` | `number` | Seek to this many **milliseconds** on change |
+| `aspectRatio` | `number` | Default `9 / 16` (height / width padding trick) |
+| `onEvent` | `(e: PlayerEvent) => void` | Subscribes to all player events |
+| `ref` | `Ref<Player>` | Underlying instance |
+
+All other `PlayerOptions` (`muted`, `lang`, `isLive`, …) are forwarded to `make`.

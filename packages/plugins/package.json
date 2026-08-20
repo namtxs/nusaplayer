@@ -1,0 +1,32 @@
+{
+  "name": "@nusaplayer/plugins",
+  "version": "1.0.15-beta.4",
+  "author": "NusaPlayer contributors",
+  "description": "NusaPlayer plugin",
+  "keywords": [
+    "nusaplayer",
+    "nusaplayer-plugins"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "node build-plugins.js --watch",
+    "build": "node build-plugins.js && tsc --emitDeclarationOnly"
+  },
+  "peerDependencies": {
+    "@nusaplayer/core": ">=1.0.0",
+    "@nusaplayer/ui": ">=1.0.0",
+    "m3u8-parser": "^7.1.0"
+  },
+  "devDependencies": {
+    "@nusaplayer/core": "workspace:*",
+    "@nusaplayer/ui": "workspace:*",
+    "@types/chromecast-caf-sender": "^1.0.11",
+    "chokidar": "^3.6.0",
+    "glob": "^10.4.5",
+    "m3u8-parser": "^7.2.0",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
+  }
+}

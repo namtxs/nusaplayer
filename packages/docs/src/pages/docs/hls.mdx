@@ -1,0 +1,93 @@
+# @nusaplayer/hls
+
+HLS playback with [hls.js](https://github.com/video-dev/hls.js). Quality, audio, and subtitle tracks show up in the UI when `@nusaplayer/ui` is loaded.
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/hls hls.js
+```
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import hls from '@nusaplayer/hls'
+
+Player.make('#player', {
+  source: { src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' }
+})
+  .use([ui(), hls({ forceHLS: true })])
+  .create()
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/hls@latest/dist/index.min.js"></script>
+<script>
+  NusaPlayer.make('#player', {
+    source: { src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' }
+  })
+    .use([
+      NusaUI(),
+      NusaHls({
+        forceHLS: true,
+        library: 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js'
+      })
+    ])
+    .create()
+</script>
+```
+
+`forceHLS: true` uses hls.js even on Safari so quality menus still work. Multi-variant sample: `https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8`.
+
+## Options
+
+```ts
+hls({
+  library: 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js',
+  forceHLS: false,
+  qualityControl: true,
+  qualitySwitch: 'immediate' | 'smooth',
+  withBitrate: false,
+  audioControl: true,
+  textControl: true,
+  config: {}, // hls.js HlsConfig
+  matcher: (video, source, forceHLS) => boolean,
+  defaultQuality: (levels) => index,
+  defaultAudio: (tracks) => index,
+  defaultSubtitle: (tracks) => index,
+  errorHandler: (player, data) => void
+})
+```
+
+```js
+hls({
+  forceHLS: true,
+  defaultQuality(levels) {
+    return levels.findLastIndex((l) => l.height <= 1080)
+  },
+  defaultAudio(tracks) {
+    return tracks.findIndex((t) => t.lang?.startsWith('en'))
+  },
+  errorHandler(player, data) {
+    if (data.details === 'bufferAppendError') return
+    player.emit('error', { message: data.type + ': ' + data.details })
+  }
+})
+```
+
+Instance: `player.context.hls`. You can mutate `player.context.hls.options.config` before the next `changeSource`.
+
+## DRM
+
+```js
+hls({
+  forceHLS: true,
+  config: {
+    emeEnabled: true,
+    drmSystems: {
+      'com.widevine.alpha': { licenseUrl: 'https://widevine-proxy.appspot.com/proxy' }
+    },
+    licenseXhrSetup(xhr) {
+      xhr.setRequestHeader('content-type', 'application/octet-stream')
+    }
+  }
+})
+```

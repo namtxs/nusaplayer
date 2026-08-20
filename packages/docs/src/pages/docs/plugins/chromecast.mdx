@@ -1,0 +1,26 @@
+# Chromecast
+
+Cast the current video when Chrome / Edge exposes the Cast API.
+
+```bash
+npm i @nusaplayer/plugins
+```
+
+```js
+import { Chromecast } from '@nusaplayer/plugins'
+
+Player.make('#player', {
+  source: { src: 'https://vjs.zencdn.net/v/oceans.mp4' }
+})
+  .use([ui(), new Chromecast()])
+  .create()
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/plugins@latest/dist/chromecast.min.js"></script>
+<script>
+  NusaPlayer.make('#player').use([NusaUI(), new NusaChromecast()]).create()
+</script>
+```
+
+The icon only appears when `chrome.cast` is available (typically desktop Chrome on https).

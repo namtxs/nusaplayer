@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NusaPlayer</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0 auto;
+        padding: 1.25rem 1rem 2rem;
+        max-width: 1280px;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #1f2937;
+        background: #f6f7fb;
+      }
+
+      .demo {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 240px;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      #meta {
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      #meta .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 0.45rem;
+        min-width: 0;
+      }
+
+      #meta h4 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #111827;
+      }
+
+      #meta .ver {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #9ca3af;
+      }
+
+      #meta .meta-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-shrink: 0;
+      }
+
+      #meta button {
+        appearance: none;
+        padding: 0;
+        border: none;
+        background: none;
+        color: #6b7280;
+        font: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      #meta button:hover {
+        color: #fb7299;
+      }
+
+      .asp {
+        padding-top: 56.25%;
+        background-color: #111;
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      }
+
+      .asp > div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #actions {
+        position: sticky;
+        top: 1rem;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 0.9rem 0.85rem 1rem;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+        max-height: calc(100vh - 2rem);
+        overflow: auto;
+      }
+
+      #actions .side-title {
+        margin: 0 0 0.85rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      #actions .side-title span {
+        display: block;
+        margin-top: 0.15rem;
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: #6b7280;
+      }
+
+      #actions h5 {
+        margin: 0.9rem 0 0.45rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+
+      #actions h5:first-of-type {
+        margin-top: 0;
+      }
+
+      #actions .btn-col {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+
+      #actions button {
+        appearance: none;
+        width: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.6rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-align: left;
+        color: #fff;
+        transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+      }
+
+      #actions button:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+      }
+
+      #actions button:active {
+        transform: translateY(0);
+        filter: brightness(0.96);
+      }
+
+      #actions button .dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.9);
+        flex-shrink: 0;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+      }
+
+      #actions button.notice {
+        background: linear-gradient(135deg, #334155, #1e293b);
+      }
+
+      #actions button.info {
+        background: linear-gradient(135deg, #fb7299, #e85a86);
+      }
+
+      #actions button.success {
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+
+      #actions button.warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+      }
+
+      #actions button.error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
+
+      #actions button.action {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      }
+
+      #actions button.muted {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+      }
+
+      #actions button.muted .dot {
+        background: #9ca3af;
+        box-shadow: none;
+      }
+
+      #actions button.muted:hover {
+        background: #eceff3;
+        filter: none;
+      }
+
+      @media only screen and (max-width: 991px) {
+        body {
+          padding: 1em 10px 2em;
+        }
+
+        .demo {
+          grid-template-columns: 1fr;
+        }
+
+        #actions {
+          position: static;
+          max-height: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo">
+      <div class="demo-main">
+        <div id="meta"></div>
+        <div class="asp">
+          <div id="player"></div>
+        </div>
+      </div>
+      <aside id="actions"></aside>
+    </div>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

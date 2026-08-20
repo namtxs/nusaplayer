@@ -1,0 +1,31 @@
+import { LibraryOptions } from 'vite'
+import banner from 'vite-plugin-banner'
+import { viteConfig } from '../../vite.config'
+import { version as CoreVersion, name as CoreName, author, description } from '../core/package.json'
+import { version as UIVersion, name as UIName } from '../ui/package.json'
+import { plugin } from 'vite-plugin-merge-exports'
+
+export default viteConfig(
+  'ui',
+  {
+    build: {
+      emptyOutDir: false,
+      rollupOptions: {
+        external: []
+      },
+      lib: {
+        entry: './src/index.core.ts',
+        name: 'NusaPlayer',
+        formats: ['umd'],
+        fileName: () => 'index.ui.js'
+      } as LibraryOptions
+    },
+    plugins: [
+      banner({
+        content: `/**\n * name: ${CoreName} + ${UIName}\n * version: v${CoreVersion} + v${UIVersion}\n * description: ${description}\n * author: ${author}\n */`
+      }),
+      plugin()
+    ]
+  },
+  false
+)

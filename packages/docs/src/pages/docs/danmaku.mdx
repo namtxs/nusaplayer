@@ -1,0 +1,121 @@
+# @nusaplayer/danmaku
+
+Scrolling comments (danmaku) plus an optional send bar. Works with Bilibili XML, a comment array, or a loader function.
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/danmaku
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/core@latest/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/ui@latest/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/danmaku@latest/dist/index.min.js"></script>
+```
+
+## Basic
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import Danmaku from '@nusaplayer/danmaku'
+
+Player.make('#player', {
+  source: {
+    src: 'https://vjs.zencdn.net/v/oceans.mp4',
+    poster: 'https://vjs.zencdn.net/v/oceans.png'
+  }
+})
+  .use([
+    ui(),
+    new Danmaku({
+      enable: true,
+      displaySender: true,
+      source: '/demo/danmaku.xml'
+    })
+  ])
+  .create()
+```
+
+UMD: `new NusaDanmaku({ ... })`. Instance: `player.context.danmaku`.
+
+The demo XML lives at `/demo/danmaku.xml` in this repo.
+
+## Options
+
+```ts
+type Options = {
+  source?: string | Comment[] | (() => Comment[] | Promise<Comment[]>)
+  speed?: number // default 144
+  opacity?: number
+  fontSize?: number
+  area?: number // 0–1 of the video height
+  heatmap?: boolean // default true
+  customHeatmap?: Array<[number, number]>
+  engine?: 'dom' | 'canvas' // default 'dom'
+  enable?: boolean
+  displaySender?: boolean // input on the control bar (desktop + mobile)
+  onEmit?: (comment: Comment) => boolean | void
+}
+
+interface Comment {
+  text?: string
+  mode?: 'ltr' | 'rtl' | 'top' | 'bottom'
+  time?: number // seconds
+  style?: Partial<CSSStyleDeclaration>
+  render?(): HTMLElement | HTMLCanvasElement
+}
+```
+
+## Load comments
+
+```js
+new Danmaku({
+  source: [
+    { text: 'hello', mode: 'rtl', time: 1 },
+    { text: 'world', mode: 'top', time: 2 }
+  ]
+})
+
+new Danmaku({
+  source: '/demo/danmaku.xml'
+})
+
+new Danmaku({
+  source: () => fetch('/comments.json').then((r) => r.json())
+})
+
+player.context.danmaku.changeSource('/demo/danmaku.xml')
+```
+
+A `source` function must return `Comment[]`. Pass Bilibili XML as a URL string — it is parsed automatically.
+
+Bilibili XML uses `<d p="time,mode,fontsize,color,...">text</d>`. Modes 1–3 scroll right-to-left, 4 bottom, 5 top, 6 left-to-right.
+
+## Live comments
+
+```js
+const danmaku = player.context.danmaku
+const ws = new WebSocket('wss://example.com/live')
+
+ws.onmessage = (msg) => {
+  danmaku.danmaku.emit({ text: msg.data, mode: 'rtl' })
+}
+```
+
+`onEmit` runs when the user sends from the input. Return `false` to block.
+
+## Playlist
+
+Each playlist item may set `danmaku` (URL, array, or function). The plugin reloads comments when the source changes.
+
+```js
+new Playlist({
+  sources: [
+    {
+      title: 'Oceans',
+      src: 'https://vjs.zencdn.net/v/oceans.mp4',
+      danmaku: '/demo/danmaku.xml'
+    }
+  ]
+})
+```

@@ -1,0 +1,21 @@
+# Introduction
+
+`@nusaplayer/core` is the engine. UI, streaming, danmaku, and extras are separate packages attached with `.use([...]).create()`.
+
+Theme color is `#fb7299`. UI strings include `en` and `id`.
+
+[Install](/docs/start) · [API](/docs/api) · [Playground](/playground) · [Streams](/player)
+
+## Packages
+
+| Need | Install |
+| --- | --- |
+| MP4 + controls | `@nusaplayer/core` `@nusaplayer/ui` |
+| HLS / DASH / FLV | `@nusaplayer/hls` `@nusaplayer/dash` `@nusaplayer/mpegts` |
+| Danmaku | `@nusaplayer/danmaku` |
+| Playlist, Cast, AirPlay | `@nusaplayer/plugins` |
+| React | `@nusaplayer/react` |
+
+UMD: `NusaPlayer`, `NusaUI`, `NusaHls`, `NusaDash`, `NusaMpegts`, `NusaShaka`, `NusaTorrent`, `NusaDanmaku`.
+
+Playground runs React samples in the browser. Streams plays a URL through the same loaders. Demo files: `/demo/en.srt`, `/demo/id.srt`, `/demo/danmaku.xml`.

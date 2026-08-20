@@ -1,0 +1,135 @@
+# API
+
+Everything below is on the instance returned by `Player.make(...).use(...).create()`.
+
+<Callout type="info">
+  UI helpers (`notice`, `toast`, `menu`, `setting`, `subtitle`) live on `player.context.ui`. See [@nusaplayer/ui](/docs/ui).
+</Callout>
+
+## Create
+
+```js
+const player = Player.make('#player', options)
+  .use([ui(), hls({ forceHLS: true })])
+  .create()
+```
+
+| Method | Description |
+| --- | --- |
+| `Player.make(el, options?)` | Create an instance. `options` may be a source URL string. |
+| `player.use(plugins)` | Queue plugins. Call before `create`. |
+| `player.create()` | Mount DOM, apply plugins, load `source`. |
+| `player.applyPlugin(plugin)` | Attach a plugin after create. |
+| `Player.version` | Package version string. |
+| `Player.players` | All living instances. |
+
+## Playback
+
+```js
+player.play()
+player.pause()
+player.togglePlay()
+player.seek(12.5)
+player.setVolume(0.5)
+player.mute()
+player.unmute()
+player.toggleMute()
+player.setPlaybackRate(1.25)
+player.setLoop(true)
+player.setPoster('https://vjs.zencdn.net/v/oceans.png')
+```
+
+## Source
+
+```js
+await player.changeSource({
+  src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  title: 'Big Buck Bunny'
+})
+
+await player.changeQuality({
+  src: 'https://vjs.zencdn.net/v/oceans.mp4'
+})
+```
+
+`changeQuality` keeps current time and playing state. `changeSource` starts the new clip from the beginning (still keeps playing if it was playing).
+
+Both emit `videosourcechange` / `videoqualitychange` first, then `videosourcechanged` / `videoqualitychanged`, or `sourcechangeerror` / `qualitychangeerror` on failure.
+
+## Fullscreen & PiP
+
+```js
+player.enterFullscreen()
+player.exitFullscreen()
+player.toggleFullScreen()
+player.enterPip()
+player.exitPip()
+player.togglePip()
+```
+
+| Getter | Meaning |
+| --- | --- |
+| `isFullScreen` | Native fullscreen on the player root |
+| `isFullscreenEnabled` | Browser allows fullscreen |
+| `isInPip` | Video is in Picture-in-Picture |
+| `isPipEnabled` | PiP API is available |
+
+## State getters
+
+| Getter | Type |
+| --- | --- |
+| `isPlaying` | `boolean` |
+| `isMuted` | `boolean` |
+| `isEnded` | `boolean` |
+| `isLoop` | `boolean` |
+| `isAutoPlay` | `boolean` |
+| `duration` | `number` (seconds) |
+| `currentTime` | `number` |
+| `volume` | `number` |
+| `playbackRate` | `number` |
+| `buffered` | `TimeRanges` |
+| `state` | `HTMLMediaElement.readyState` |
+| `isNativeUI` | custom UI skipped |
+
+Useful DOM nodes: `player.$root`, `player.$video`, `player.container`.
+
+## Events
+
+```js
+player.on('play', ({ type, payload }) => {})
+player.on(['pause', 'ended'], handler)
+player.on((event) => console.log(event.type, event.payload)) // all events
+player.once('loadedmetadata', handler)
+player.off('play', handler)
+player.emit('notice', { text: 'hello', pos: 'top' })
+```
+
+### Media events
+
+Forwarded from `<video>`: `abort`, `canplay`, `canplaythrough`, `durationchange`, `emptied`, `ended`, `error`, `loadeddata`, `loadedmetadata`, `loadstart`, `pause`, `play`, `playing`, `progress`, `ratechange`, `seeked`, `seeking`, `stalled`, `suspend`, `timeupdate`, `volumechange`, `waiting`, `encrypted`, `waitingforkey`, `enterpictureinpicture`, `leavepictureinpicture`.
+
+Also: `fullscreenchange`, `fullscreenerror`, `contextmenu`.
+
+### Player events
+
+| Event | When |
+| --- | --- |
+| `loadedplugin` | A plugin finished `apply` |
+| `videosourcechange` | `changeSource` started |
+| `videosourcechanged` | New source is ready |
+| `sourcechangeerror` | `changeSource` failed |
+| `videoqualitychange` | `changeQuality` started |
+| `videoqualitychanged` | Quality switch ready |
+| `qualitychangeerror` | Quality switch failed |
+| `loaderchange` | Active streaming loader changed |
+| `destroy` | Instance torn down |
+
+UI also emits `controlsshown`, `controlshidden`, `backward`, `previous`, `next`. Playlist emits `playlistsourcechange` and `playlistsourceerror`.
+
+## Destroy
+
+```js
+await player.destroy()
+```
+
+Removes listeners, unloads plugins, and takes the instance out of `Player.players`.

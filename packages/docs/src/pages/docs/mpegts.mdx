@@ -1,0 +1,54 @@
+# @nusaplayer/mpegts
+
+FLV and MPEG-TS via [mpegts.js](https://github.com/xqq/mpegts.js).
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/mpegts mpegts.js
+```
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import mpegts from '@nusaplayer/mpegts'
+
+Player.make('#player', {
+  source: {
+    src: 'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv',
+    format: 'flv'
+  }
+})
+  .use([ui(), mpegts()])
+  .create()
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/mpegts@latest/dist/index.min.js"></script>
+<script>
+  NusaPlayer.make('#player', {
+    source: {
+      src: 'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv',
+      format: 'flv'
+    }
+  })
+    .use([NusaUI(), NusaMpegts()])
+    .create()
+</script>
+```
+
+The matcher also treats `.flv`, `.ts`, `.m2ts` URLs as mpegts when `format` is `'auto'`.
+
+## Options
+
+```ts
+mpegts({
+  library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js',
+  config: {}, // mpegts.js Config
+  matcher: (video, source) => boolean,
+  active: (instance, library) => {
+    // optional teardown returned as a function
+  }
+})
+```
+
+Instance: `player.context.mpegts`. The FLV URL must allow CORS.

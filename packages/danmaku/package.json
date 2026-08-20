@@ -1,0 +1,40 @@
+{
+  "name": "@nusaplayer/danmaku",
+  "version": "1.2.26-beta.0",
+  "description": "Danmaku plugin for NusaPlayer",
+  "type": "module",
+  "main": "./dist/index.es.js",
+  "types": "./dist/src/index.d.ts",
+  "sideEffects": false,
+  "author": "NusaPlayer contributors",
+  "keywords": [
+    "nusaplayer-plugin",
+    "danmaku"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently -n es,dts \"vite build --watch\"  \"tsc --emitDeclarationOnly --watch\"",
+    "tsc": "tsc --noEmit && echo",
+    "build": "vite build && tsc --emitDeclarationOnly"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not op_mini all",
+    "IE 11"
+  ],
+  "dependencies": {
+    "danmaku": "2.0.7"
+  },
+  "peerDependencies": {
+    "@nusaplayer/core": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@nusaplayer/core": "workspace:*"
+  }
+}

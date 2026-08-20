@@ -1,0 +1,145 @@
+import type { PlayerEvent, PlayerOptions, PlayerPlugin, Source } from '@nusaplayer/core'
+import Player from '@nusaplayer/core'
+import {
+  DependencyList,
+  EffectCallback,
+  forwardRef,
+  Ref,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef
+} from 'react'
+
+export interface ReactNusaPlayerProps extends Omit<PlayerOptions, 'source'> {
+  playing?: boolean
+  duration?: number
+  aspectRatio?: number
+  plugins?: PlayerPlugin[]
+  onEvent?: (e: PlayerEvent) => void
+  source?: Source | Promise<Source>
+}
+
+const ReactNusaPlayer = forwardRef((props: ReactNusaPlayerProps, ref: Ref<Player | null>) => {
+  const { playing, duration, aspectRatio = 9 / 16, plugins = [], onEvent, source, ...rest } = props
+
+  const onEventRef = useRef(onEvent)
+  onEventRef.current = onEvent
+
+  const player = useRef<Player | null>(null)
+  const preSource = usePrevious(source)
+
+  const isReady = player.current && player.current.$root
+
+  const onRefChange = useCallback((node: HTMLDivElement) => {
+    if (node !== null && !player.current) {
+      const initialParams =
+        source instanceof Promise ? rest : source ? { ...rest, source } : rest
+      player.current = Player.make(node, initialParams).use(plugins).create()
+      if (source instanceof Promise) player.current.changeSource(source!)
+      if (typeof duration == 'number') player.current.seek(duration / 1000)
+      if (onEvent) {
+        player.current.on((payload: PlayerEvent) => onEventRef.current?.(payload))
+      }
+    }
+  }, [])
+
+  useEffectIf(isReady, () => {
+    if (playing) {
+      if (!player.current!.isPlaying) player.current!.play()
+    } else {
+      if (player.current!.isPlaying) player.current!.pause()
+    }
+  }, [playing])
+
+  useEffectIf(isReady, () => {
+    if (
+      source &&
+      (source instanceof Promise
+        ? preSource != source
+        : source.src && (preSource as Source)?.src !== source.src)
+    ) {
+      player.current!.changeSource(source)
+    }
+  }, [source])
+
+  useEffectIf(
+    isReady && typeof duration === 'number',
+    () => {
+      player.current!.seek(duration! / 1000)
+    },
+    [duration]
+  )
+
+  useEffectIf(isReady, () => {
+    if (rest.muted) {
+      player.current!.mute()
+    } else {
+      player.current!.unmute()
+    }
+  }, [rest.muted])
+
+  useEffectIf(isReady && typeof rest.playbackRate === 'number', () => {
+    player.current!.setPlaybackRate(rest.playbackRate!)
+  }, [rest.playbackRate])
+
+  useEffect(() => {
+    return () => {
+      player.current?.destroy()
+      player.current = null
+    }
+  }, [])
+
+  useImperativeHandle(ref, () => player.current, [])
+
+  return useMemo(() => {
+    if (aspectRatio == 0) {
+      return <div ref={onRefChange}></div>
+    }
+
+    return (
+      <div
+        style={{
+          width: '100%',
+          paddingTop: `${aspectRatio * 100}%`,
+          backgroundColor: '#f4f4f4',
+          position: 'relative'
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%'
+          }}
+          ref={onRefChange}
+        ></div>
+      </div>
+    )
+  }, [])
+})
+
+const useEffectIf = (where: any, cb: EffectCallback, deps?: DependencyList): void => {
+  useEffect(() => {
+    if (Boolean(where)) {
+      return cb()
+    }
+  }, deps)
+}
+
+export function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<T>()
+
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+
+  return ref.current
+}
+
+export * from '@nusaplayer/core'
+
+export default ReactNusaPlayer

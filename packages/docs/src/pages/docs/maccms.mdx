@@ -1,0 +1,70 @@
+# Apple CMS
+
+```html filename="nusaplayer.html"
+<!--
+1. Upload to Apple CMS directory “/static/player/”, filename nusaplayer.html
+2. In Apple CMS admin: Video → Player → Add
+3. After basic settings, open “Player code” and paste:
+MacPlayer.Html = '<iframe border="0" src="'+maccms.path+'/static/player/nusaplayer.html" width="100%" height="100%" marginWidth="0" frameSpacing="0" marginHeight="0" frameBorder="0" scrolling="no" vspale="0" noResize></iframe>';
+MacPlayer.Show();
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NusaPlayer</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <meta name="referrer" content="never" />
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@nusaplayer/full@latest/dist/index.min.js"></script>
+  </head>
+  <body marginwidth="0" marginheight="0">
+    <div id="player"></div>
+    <script type="text/javascript">
+      var player = NusaPlayer.make('#player', {
+        source: {
+          src: parent.MacPlayer.PlayUrl
+        },
+        autoplay: true
+      })
+        .use([
+          NusaUI({
+            theme: {
+              primaryColor: '#fb7299',
+              controller: {
+                slideToSeek: 'always'
+              }
+            },
+            keyboard: { global: true },
+            screenshot: true,
+            pictureInPicture: true
+          }),
+          NusaHls({
+            forceHLS: true,
+            library: 'https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js'
+          }),
+          NusaDash({ library: 'https://cdn.dashjs.org/v4.7.4/dash.all.min.js' }),
+          NusaMpegts({ library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js' }),
+          NusaTorrent({ library: 'https://cdn.jsdelivr.net/npm/webtorrent@0.98.18/webtorrent.min.js' })
+        ])
+        .create()
+
+      if (parent.MacPlayer.PlayLinkNext != '') {
+        player.on('ended', function () {
+          top.location.href = parent.MacPlayer.PlayLinkNext
+        })
+      }
+    </script>
+  </body>
+</html>
+```

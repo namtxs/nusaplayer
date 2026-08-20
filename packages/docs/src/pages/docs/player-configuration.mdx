@@ -1,0 +1,115 @@
+# Configuration
+
+Passed as the second argument to `Player.make(container, options)`.
+
+<Callout>
+  Core does not render controls, subtitles, or thumbnails. Install [`@nusaplayer/ui`](/docs/ui) for those.
+</Callout>
+
+```js
+import Player from '@nusaplayer/core'
+
+Player.make('#player', {
+  source: {
+    src: 'https://vjs.zencdn.net/v/oceans.mp4',
+    poster: 'https://vjs.zencdn.net/v/oceans.png',
+    title: "Disney's Oceans"
+  },
+  volume: 0.8,
+  lang: 'en'
+}).create()
+```
+
+## container
+
+CSS selector or element. The player fills this node.
+
+```ts
+type container = HTMLElement | string
+```
+
+## options
+
+```ts
+interface PlayerOptions {
+  source?: {
+    src: string
+    poster?: string
+    title?: string
+    format?: 'auto' | 'hls' | 'm3u8' | 'dash' | 'mpd' | 'flv' | 'm2ts' | 'mpegts' | string
+    type?: string // MIME, optional
+  }
+  autoplay?: boolean
+  autopause?: boolean // pause other NusaPlayer instances when this one plays
+  muted?: boolean
+  loop?: boolean
+  volume?: number // 0–1
+  playbackRate?: number
+  playsinline?: boolean
+  preload?: 'auto' | 'metadata' | 'none'
+  lang?: 'auto' | 'zh' | 'zh-CN' | 'en' | 'id' | 'fa' | 'pa'
+  languages?: Partial<Record<Lang, Record<string, string>>>
+  isLive?: boolean
+  videoAttr?: Record<string, boolean | string>
+  isNativeUI?: () => boolean
+}
+```
+
+| Option | Default | Notes |
+| --- | --- | --- |
+| `source.format` | `'auto'` | Loaders match on extension (`m3u8`, `mpd`, `flv`) or this field |
+| `autoplay` | `false` | Browsers often require `muted: true` |
+| `autopause` | `true` | Pause other NusaPlayer instances when this one plays |
+| `playsinline` | `true` | Needed on iOS so playback stays in-page |
+| `lang` | `'auto'` | Follows `navigator.language` |
+| `isLive` | `false` | Hides progress / seek when true |
+| `isNativeUI` | — | Return true to skip custom UI (Safari native controls) |
+
+## Language
+
+Built-in UI strings: `en`, `id`, `zh` / `zh-CN`, `fa`, `pa`.
+
+```js
+Player.make('#player', {
+  lang: 'id',
+  languages: {
+    id: { Play: 'Putar', Pause: 'Jeda' }
+  },
+  source: { src: 'https://vjs.zencdn.net/v/oceans.mp4' }
+})
+```
+
+`lang: 'auto'` picks the first navigator language NusaPlayer knows, then falls back to English.
+
+## Remember volume and speed
+
+```js
+player.on('ratechange', () => {
+  if (!player.isSourceChanging) {
+    localStorage.setItem('np-speed', String(player.playbackRate))
+  }
+})
+
+player.on('volumechange', () => {
+  localStorage.setItem('np-volume', String(player.volume))
+})
+
+player.on('timeupdate', () => {
+  localStorage.setItem(player.options.source.src, String(player.currentTime))
+})
+
+player.on('loadedmetadata', () => {
+  const prev = localStorage.getItem(player.options.source.src)
+  if (prev) player.seek(Number(prev) - 3)
+})
+```
+
+Apply saved values when you call `make`:
+
+```js
+Player.make('#player', {
+  volume: Number(localStorage.getItem('np-volume') || 1),
+  playbackRate: Number(localStorage.getItem('np-speed') || 1),
+  source: { src: 'https://vjs.zencdn.net/v/oceans.mp4' }
+})
+```

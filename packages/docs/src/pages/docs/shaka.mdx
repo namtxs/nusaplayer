@@ -1,0 +1,33 @@
+# @nusaplayer/shaka
+
+[Shaka Player](https://github.com/shaka-project/shaka-player) loader. Use it when you need Shaka's DASH/HLS stack or DRM config.
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/shaka shaka-player
+```
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import shaka from '@nusaplayer/shaka'
+
+Player.make('#player', {
+  source: {
+    src: 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd',
+    format: 'shaka'
+  }
+})
+  .use([
+    ui(),
+    shaka({
+      library: 'https://cdn.jsdelivr.net/npm/shaka-player@4.14.1/dist/shaka-player.compiled.min.js'
+    })
+  ])
+  .create()
+```
+
+Set `source.format` to `'shaka'` so this loader wins over `@nusaplayer/dash` / `@nusaplayer/hls` when several loaders are installed.
+
+UMD: `NusaShaka({ library })`. Instance: `player.context.shaka`.
+
+Pass Shaka `player.configure(...)` options through the plugin `config` field when you need DRM clearKeys or similar (see `examples/html/src/shaka-live.html`).

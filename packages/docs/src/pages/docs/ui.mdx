@@ -1,0 +1,275 @@
+# @nusaplayer/ui
+
+Controls, theme, subtitles, keyboard, screenshot, fullscreen, and toast/notice.
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/core@latest/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/ui@latest/dist/index.min.js"></script>
+```
+
+## Basic
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+
+Player.make('#player', {
+  source: {
+    title: "Disney's Oceans",
+    src: 'https://vjs.zencdn.net/v/oceans.mp4',
+    poster: 'https://vjs.zencdn.net/v/oceans.png'
+  }
+})
+  .use([
+    ui({
+      theme: { primaryColor: '#fb7299', controller: { setting: 'auto' } },
+      keyboard: { global: true },
+      screenshot: true,
+      pictureInPicture: true
+    })
+  ])
+  .create()
+```
+
+UMD: `NusaUI()`. After create the instance is `player.context.ui`.
+
+## Options
+
+```ts
+ui({
+  theme: {
+    primaryColor: '#fb7299',
+    watermark: { src: '/logo.png', style: { top: '10px', right: '10px', width: '120px' } },
+    progress: { position: 'top' | 'center' | 'auto', mini: true, backward: 10, forward: 10 },
+    controller: {
+      display: 'always' | 'played',
+      header: true | { back: 'always' | 'fullscreen' },
+      coverButton: true,
+      displayBehavior: 'hover' | 'delay' | 'none',
+      slideToSeek: 'none' | 'always' | 'long-touch',
+      setting: 'auto' | 'top' | 'bottom'
+    }
+  },
+  autoFocus: true,
+  screenshot: false,
+  fullscreen: true,
+  webFullscreen: true,
+  pictureInPicture: true,
+  forceLandscapeOnFullscreen: true,
+  keyboard: { focused: true, global: false },
+  speeds: ['2.0', '1.5', '1.25', '1.0', '0.75', '0.5'],
+  settings: ['loop'],
+  subtitle: { source: [], fontSize: 20, color: '#fff' },
+  thumbnails: { src: '/sprite.jpg', number: 100 },
+  highlight: { source: [{ time: 12, text: 'Intro' }] },
+  menu: [],
+  icons: {}
+})
+```
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `theme.primaryColor` | `#fb7299` | Progress, volume, active icons |
+| `theme.controller.setting` | `'top'` | `'auto'` puts the gear on the bottom bar (same as desktop) |
+| `theme.progress.position` | `'top'` | Bar sits above the control row |
+| `keyboard.global` | `false` | Shortcuts work even when the player is not focused |
+| `screenshot` | `false` | Saves a PNG of the current frame |
+| `settings` | `['loop']` | Pass `false` to hide the panel extras |
+
+Show the title in the header: set `source.title` and keep `theme.controller.header` truthy (default).
+
+## Subtitles
+
+SRT and WebVTT.
+
+```js
+ui({
+  subtitle: {
+    source: [
+      { name: 'English', default: true, src: '/demo/en.srt' },
+      { name: 'Indonesia', src: '/demo/id.srt' }
+    ],
+    fontSize: 20,
+    color: '#fff',
+    bottom: '10%',
+    onChange(source) {
+      localStorage.setItem('subtitle', source.src)
+    }
+  }
+})
+
+player.context.ui.subtitle.changeSource([
+  { name: 'English', default: true, src: '/demo/en.srt' }
+])
+```
+
+`offset` on a source shifts cues in seconds.
+
+## Thumbnails
+
+Sprite sheet (one image, N frames) or a grid:
+
+```js
+thumbnails: { src: '/sprite.jpg', number: 100 }
+thumbnails: { src: ['1.jpg', '2.jpg'], x: 10, y: 10, number: 192 }
+```
+
+WebVTT image sprites use [`vttThumbnails`](/docs/plugins/vtt-thumbnails).
+
+## Highlights
+
+Markers on the progress bar:
+
+```js
+highlight: {
+  color: '#fff',
+  source: [
+    { time: 4, text: 'Intro' },
+    { time: 14, text: 'Plugins' },
+    { time: 29, text: 'Keyboard' }
+  ]
+}
+
+player.context.ui.changHighlightSource([{ time: 10, text: 'New' }])
+```
+
+## Custom menu
+
+```js
+ui({
+  menu: [
+    {
+      name: 'Quality',
+      key: 'Quality',
+      position: 'bottom',
+      anchor: 'settings',
+      children: [
+        { name: 'FHD', default: true, value: 'https://vjs.zencdn.net/v/oceans.mp4' },
+        { name: 'HLS', value: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' }
+      ],
+      onChange({ value }) {
+        player.changeQuality({ src: value })
+      }
+    }
+  ]
+})
+
+player.context.ui.menu.register(menu)
+player.context.ui.menu.unregister('Quality')
+player.context.ui.menu.select('Quality', 0)
+player.context.ui.menu.updateLabel('Quality', '1080P')
+```
+
+`anchor: 'settings'` places the control next to the gear (used for quality on desktop).
+
+## Custom setting
+
+```js
+ui({
+  settings: [
+    'loop',
+    {
+      key: 'theme',
+      type: 'selector',
+      name: 'Theme',
+      children: [
+        { name: 'Pink', value: '#fb7299', default: true },
+        { name: 'Blue', value: '#3b82f6' }
+      ],
+      onChange({ value }) {
+        document.documentElement.style.setProperty('--primary', value)
+      }
+    }
+  ]
+})
+
+player.context.ui.setting.register(setting)
+player.context.ui.setting.unregister('theme')
+player.context.ui.setting.updateLabel('theme', 'Pink')
+player.context.ui.setting.select('theme', 0)
+```
+
+Types: `selector`, `switcher`, `slider`, `option`.
+
+## Notice & toast
+
+```js
+player.context.ui.notice('Saved', 'top')
+player.emit('notice', { text: 'Saved', pos: 'top' })
+
+player.context.ui.toast('Switched to 1080P')
+player.context.ui.toast({
+  title: 'Delete history?',
+  text: 'This cannot be undone.',
+  type: 'warning',
+  duration: false,
+  actions: [
+    { text: 'Cancel', variant: 'ghost' },
+    { text: 'Delete', variant: 'danger', onClick: () => {} }
+  ]
+})
+player.context.ui.toast.closeAll()
+```
+
+Positions: `top`, `bottom`, `left`, `right`, `center`, `top-left`, `top-center`, `top-right`, `left-bottom`, `bottom-right`.
+
+## Keyboard
+
+Enabled when `keyboard.focused` (player focused) or `keyboard.global`.
+
+| Key | Action |
+| --- | --- |
+| `↑` / `↓` | Volume ±10% |
+| `←` / `→` | Seek ±5s |
+| `Space` / `Enter` | Play / pause |
+| `S` | Screenshot |
+| `F` | Fullscreen |
+| `W` | Web fullscreen |
+| `M` | Mute |
+| `C` | Settings |
+| `L` | Playlist (if the playlist plugin is loaded) |
+
+```js
+player.context.ui.keyboard.register({
+  KeyK: () => player.togglePlay()
+})
+player.context.ui.keyboard.unregister(['KeyK'])
+```
+
+## Watermark
+
+Position with `top` / `left` / `right` / `bottom` on `style` so screenshots include it.
+
+```js
+ui({
+  theme: {
+    watermark: {
+      src: '/logo.png',
+      style: { top: '10px', right: '10px', width: '160px', height: 'auto' },
+      attrs: { class: 'watermark', crossOrigin: 'anonymous' }
+    }
+  }
+})
+```
+
+## UI events
+
+`controlsshown`, `controlshidden`, `backward`, `previous`, `next`.
+
+Wire skip buttons with `previous` / `next` (the playlist plugin already listens).
+
+## Errors
+
+```js
+player.emit('error', { message: 'Stream failed', code: 1 })
+
+ui({
+  errorBuilder(error, target, fallback) {
+    fallback(error)
+  }
+})
+```

@@ -1,0 +1,24 @@
+# VTT thumbnails
+
+Progress-bar preview from a WebVTT file that points at sprite images (the usual `xywh=` form).
+
+```js
+import { vttThumbnails } from '@nusaplayer/plugins'
+
+Player.make('#player', {
+  source: { src: 'https://vjs.zencdn.net/v/oceans.mp4' }
+})
+  .use([
+    ui(),
+    vttThumbnails({
+      src: '/thumbnails.vtt',
+      width: 160,
+      height: 90
+    })
+  ])
+  .create()
+```
+
+UMD: `NusaVttThumbnails({ src })`.
+
+For a single sprite sheet without VTT, use [`ui({ thumbnails })`](/docs/ui) instead.

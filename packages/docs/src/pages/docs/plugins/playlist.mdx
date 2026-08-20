@@ -1,0 +1,101 @@
+# Playlist
+
+Requires `@nusaplayer/ui`. Shows a slide-out list, auto-plays the next item, and can attach per-item subtitles, danmaku, thumbnails, and highlights.
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/plugins
+```
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import { Playlist } from '@nusaplayer/plugins'
+
+const player = Player.make('#player', { source: { src: '' } })
+  .use([
+    ui(),
+    new Playlist({
+      initialIndex: 0,
+      autoNext: true,
+      autoHide: true,
+      sources: [
+        {
+          title: "Disney's Oceans",
+          src: 'https://vjs.zencdn.net/v/oceans.mp4',
+          poster: 'https://vjs.zencdn.net/v/oceans.png',
+          duration: '00:46',
+          danmaku: '/demo/danmaku.xml',
+          subtitles: [
+            { name: 'English', default: true, src: '/demo/en.srt' },
+            { name: 'Indonesia', src: '/demo/id.srt' }
+          ],
+          highlights: [
+            { time: 4, text: 'Intro' },
+            { time: 29, text: 'Keyboard' }
+          ]
+        },
+        {
+          title: 'Big Buck Bunny - HLS',
+          src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+          duration: '10:34'
+        },
+        {
+          title: 'DASH',
+          src: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd',
+          duration: '10:34'
+        }
+      ]
+    })
+  ])
+  .create()
+```
+
+UMD: `new NusaPlaylist({ ... })`. Instance: `player.context.playlist`. Toggle the list with `L`.
+
+## Options
+
+```ts
+interface PlaylistOptions {
+  sources?: PlaylistSource[]
+  initialIndex?: number
+  autoNext?: boolean // default true
+  autoHide?: boolean // default true
+  customFetcher?: (
+    player: Player,
+    source: PlaylistSource,
+    index: number
+  ) => PlaylistSource | Promise<PlaylistSource>
+  m3uList?: true | { sourceFormat?: (info: Segment) => Source }
+}
+
+interface PlaylistSource {
+  src?: string
+  id?: string | number
+  title?: string
+  poster?: string
+  format?: string
+  duration?: string
+  subtitles?: SubtitleSource[]
+  thumbnails?: Thumbnails
+  highlights?: Highlight[]
+  danmaku?: string | Function | Comment[]
+}
+```
+
+`customFetcher` is useful for DRM or signed URLs — return the real `src` when the user picks that row.
+
+## Methods
+
+```js
+player.context.playlist.next()
+player.context.playlist.previous()
+player.context.playlist.changeSource(2)
+player.context.playlist.changeSourceList(newSources)
+player.context.playlist.showUI()
+player.context.playlist.hideUI()
+```
+
+## Events
+
+- `playlistsourcechange`
+- `playlistsourceerror`

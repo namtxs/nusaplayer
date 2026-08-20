@@ -1,0 +1,24 @@
+# AirPlay
+
+AirPlay button on Safari / iOS when `WebKitPlaybackTargetAvailabilityEvent` is present.
+
+```bash
+npm i @nusaplayer/plugins
+```
+
+```js
+import { AirPlay } from '@nusaplayer/plugins'
+
+Player.make('#player', {
+  source: { src: 'https://vjs.zencdn.net/v/oceans.mp4' }
+})
+  .use([ui(), new AirPlay()])
+  .create()
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/plugins@latest/dist/airplay.min.js"></script>
+<script>
+  NusaPlayer.make('#player').use([NusaUI(), new NusaAirplay()]).create()
+</script>
+```

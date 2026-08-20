@@ -1,0 +1,55 @@
+# @nusaplayer/dash
+
+MPEG-DASH via [dash.js](https://github.com/Dash-Industry-Forum/dash.js).
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/dash dashjs
+```
+
+```js
+import Player from '@nusaplayer/core'
+import ui from '@nusaplayer/ui'
+import dash from '@nusaplayer/dash'
+
+Player.make('#player', {
+  source: { src: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd' }
+})
+  .use([ui(), dash()])
+  .create()
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@nusaplayer/dash@latest/dist/index.min.js"></script>
+<script>
+  NusaPlayer.make('#player', {
+    source: { src: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd' }
+  })
+    .use([
+      NusaUI(),
+      NusaDash({ library: 'https://cdn.dashjs.org/v4.7.4/dash.all.min.js' })
+    ])
+    .create()
+</script>
+```
+
+Multi-period / multi-language sample: `https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd`.
+
+Set `source.format` to `'dash'` or `'mpd'` if the URL has no `.mpd` suffix.
+
+Instance: `player.context.dash`.
+
+## DRM
+
+```js
+dash({
+  drm: {
+    'com.widevine.alpha': {
+      serverURL: 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
+      httpRequestHeaders: { 'X-AxDRM-Message': 'token' },
+      priority: 0
+    }
+  }
+})
+
+player.context.dash.options.drm = { /* next source */ }
+```

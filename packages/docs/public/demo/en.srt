@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:04,000
+NusaPlayer demo
+
+2
+00:00:04,200 --> 00:00:08,500
+An HTML5 video player — do more, keep it simple.
+
+3
+00:00:09,000 --> 00:00:13,500
+This clip is the public Video.js Oceans sample.
+
+4
+00:00:14,000 --> 00:00:20,000
+Subtitles, danmaku, playlist, and streaming plugins all work together.
+
+5
+00:00:21,000 --> 00:00:28,000
+Try HLS, DASH, FLV, and WebTorrent from the playlist.
+
+6
+00:00:29,000 --> 00:00:38,000
+Keyboard: Space play/pause · F fullscreen · M mute · arrows seek.
+
+7
+00:00:39,000 --> 00:00:46,000
+Thanks for trying NusaPlayer.

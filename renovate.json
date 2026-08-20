@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":automergePatch",
+    ":automergeTesters",
+    ":automergeLinters",
+    ":rebaseStalePrs"
+  ],
+  "labels": ["dependencies"],
+  "pin": { "commitBody": "[skip ci]" },
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "depTypeList": ["peerDependencies"],
+      "enabled": false
+    },
+    {
+      "updateTypes": ["major"],
+      "labels": ["UPDATE-MAJOR"]
+    }
+  ],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "thumbnails-tool",
+    "**/examples/**"
+  ],
+  "ignoreDeps": ["node", "pnpm"]
+}

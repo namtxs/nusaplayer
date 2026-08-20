@@ -1,0 +1,33 @@
+{
+  "name": "@nusaplayer/core",
+  "version": "1.2.38-beta.2",
+  "description": "NusaPlayer core — HTML5 video player engine.",
+  "type": "module",
+  "main": "./dist/index.es.js",
+  "types": "./dist/src/index.d.ts",
+  "jsdelivr": "./dist/index.min.js",
+  "sideEffects": false,
+  "author": "NusaPlayer contributors",
+  "keywords": [
+    "nusaplayer",
+    "video-player",
+    "html5-player"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently -n es,dts \"vite build --watch\"  \"tsc --emitDeclarationOnly --watch\"",
+    "tsc": "tsc --noEmit && echo",
+    "build": "vite build && tsc --emitDeclarationOnly && vite build --config vite.umd.config.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not op_mini all",
+    "IE 11"
+  ]
+}
