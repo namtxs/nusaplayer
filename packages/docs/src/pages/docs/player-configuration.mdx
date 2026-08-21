@@ -38,7 +38,13 @@ interface PlayerOptions {
     title?: string
     format?: 'auto' | 'hls' | 'm3u8' | 'dash' | 'mpd' | 'flv' | 'm2ts' | 'mpegts' | string
     type?: string // MIME, optional
-  }
+  } | Array<{
+    src: string
+    poster?: string
+    title?: string
+    format?: string
+    type?: string
+  }>
   autoplay?: boolean
   autopause?: boolean // pause other NusaPlayer instances when this one plays
   muted?: boolean
@@ -58,6 +64,7 @@ interface PlayerOptions {
 | Option | Default | Notes |
 | --- | --- | --- |
 | `source.format` | `'auto'` | Loaders match on extension (`m3u8`, `mpd`, `flv`) or this field |
+| `source` array | — | Tried in order. If one URL fails, the next is loaded (`videosourcefallback`) |
 | `autoplay` | `false` | Browsers often require `muted: true` |
 | `autopause` | `true` | Pause other NusaPlayer instances when this one plays |
 | `playsinline` | `true` | Needed on iOS so playback stays in-page |
@@ -80,6 +87,21 @@ Player.make('#player', {
 ```
 
 `lang: 'auto'` picks the first navigator language NusaPlayer knows, then falls back to English.
+
+## Fallback sources
+
+Pass an array. The first working URL is used; a later item is only loaded if the current one errors.
+
+```js
+Player.make('#player', {
+  source: [
+    { src: 'https://cdn.example/video.m3u8', format: 'hls', title: 'HLS' },
+    { src: 'https://vjs.zencdn.net/v/oceans.mp4', title: 'MP4 fallback' }
+  ]
+})
+```
+
+`player.changeSource` accepts the same array shape. Listen for `videosourcefallback` if you need to know which URL became active.
 
 ## Remember volume and speed
 

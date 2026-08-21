@@ -126,6 +126,10 @@ const render = (it: UIInterface, el: HTMLDivElement) => {
     }
   })
 
+  player.on('videosourcefallback', ({ payload }) => {
+    if (payload?.to?.title) $controlBarTitle.innerText = payload.to.title
+  })
+
   player.on('sourcechangeerror', ({ payload }) => {
     if (!payload.source?.title) {
       $controlBarTitle.innerText = (payload.e as Error)?.message || 'ERROR'

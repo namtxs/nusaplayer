@@ -45,6 +45,7 @@ Pass plugins to `.use([...])`. After `.create()` they are on `player.context`.
 - Controls, theme, screenshot, PiP, fullscreen
 - Keyboard shortcuts, captions (SRT / WebVTT), thumbnails
 - Playlist, Chromecast, AirPlay, ads, danmaku
+- Fallback URLs when a stream fails
 - Indonesian and other UI languages
 - React wrapper
 

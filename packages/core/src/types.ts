@@ -1,7 +1,6 @@
 import { EVENTS } from './constants'
 import type { Player } from './player'
 
-// TODO: multiple source
 export type Source = {
   src: string
   poster?: string
@@ -46,7 +45,7 @@ export type HLSMimeType =
 export type DASHMimeType = 'application/dash+xml'
 
 export interface PlayerOptions {
-  source?: Source
+  source?: Source | Source[]
   autoplay?: boolean //https://developer.chrome.com/blog/autoplay/
   autopause?: boolean //Only allow one player playing at once.
   // ratio?: boolean //Force an aspect ratio for all videos. The format is 'w:h' - e.g. '16:9' or '4:3'. If this is not specified then the default for HTML5 and Vimeo is to use the native resolution of the video. As dimensions are not available from YouTube via SDK, 16:9 is forced as a sensible default.

@@ -14,6 +14,7 @@ import type {
   RequiredPartial,
   Source
 } from './types'
+import { normalizeSources } from './source'
 
 const defaultOptions = {
   autoplay: false,
@@ -35,7 +36,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   static players: Player[] = []
 
   container: HTMLElement
-  options: RequiredPartial<PlayerOptions, 'languages'>
+  options: RequiredPartial<Omit<PlayerOptions, 'source'>, 'languages'> & { source: Source }
 
   locales: I18n
   eventEmitter: EventEmitter
@@ -52,20 +53,20 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
 
   hasError: boolean = false
   isSourceChanging: boolean = false
+  sources: Source[] = [{ src: '' }]
+  sourceIndex = 0
+  private fallbackLock = false
 
   constructor(el: HTMLElement | string, options?: PlayerOptions | string) {
     this.container = typeof el == 'string' ? document.querySelector(el)! : el
     if (!this.container) throw new Error((typeof el == 'string' ? el : 'Element') + ' does not exist')
 
-    this.options = Object.assign(
-      {},
-      defaultOptions,
-      typeof options === 'string' ? { source: { src: options } } : options
-    )
-    this.options.source = {
-      ...(this.options.source ?? {}),
-      src: this.options.source?.src ?? ''
-    }
+    const incoming = typeof options === 'string' ? { source: { src: options } } : options ?? {}
+    this.sources = normalizeSources(incoming.source)
+    this.sourceIndex = 0
+    this.options = Object.assign({}, defaultOptions, incoming, {
+      source: { ...this.sources[0]! }
+    })
 
     this.locales = new I18n(this.options.lang, this.options.languages)
     this.eventEmitter = new EventEmitter()
@@ -98,7 +99,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
     const errorHandler = (payload: ErrorEvent) => {
       if (this.$video.error) {
         this.hasError = true
-        this.eventEmitter.emit('error', payload)
+        this.emit('error', payload)
       }
     }
     this.listeners['error'] = errorHandler
@@ -225,6 +226,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
       this.$video.src = source.src
     }
 
+    Object.assign(this.options.source, source)
     return source
   }
 
@@ -261,7 +263,31 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   }
 
   emit(name: PlayerEventName, payload?: PlayerEvent['payload']) {
+    if (name === 'error' && this.tryFallback()) return
     this.eventEmitter.emit(name as any, payload)
+  }
+
+  applySourceList(source: Source | Source[] | string) {
+    this.sources = normalizeSources(source)
+    this.sourceIndex = 0
+    return this.sources[0]!
+  }
+
+  private tryFallback() {
+    if (this.fallbackLock) return true
+    const next = this.sources[this.sourceIndex + 1]
+    if (!next?.src) return false
+
+    this.fallbackLock = true
+    this.hasError = false
+    this.sourceIndex += 1
+    const from = { ...this.options.source }
+    this.eventEmitter.emit('videosourcefallback', { from, to: next, index: this.sourceIndex })
+    if (next.poster) this.setPoster(next.poster)
+    this.load(next).finally(() => {
+      this.fallbackLock = false
+    })
+    return true
   }
 
   setPoster(poster: string) {
@@ -408,9 +434,11 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
     })
   }
 
-  changeSource(source: Source | Promise<Source>, keepPlaying: boolean = true) {
+  changeSource(source: Source | Source[] | Promise<Source | Source[]>, keepPlaying: boolean = true) {
     this.hasError = false
-    return this._loader(source, {
+    const prepared =
+      source instanceof Promise ? source.then((item) => this.applySourceList(item)) : this.applySourceList(source)
+    return this._loader(prepared, {
       keepPlaying,
       preEvent: 'videosourcechange',
       event: 'videosourcechanged',

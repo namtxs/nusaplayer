@@ -53,6 +53,37 @@ export default function App() {
 `
   },
   {
+    id: 'fallback',
+    label: 'Fallback',
+    code: `import Player from '@nusaplayer/react'
+import ui from '@nusaplayer/ui'
+import hls from '@nusaplayer/hls'
+
+export default function App() {
+  return (
+    <Player
+      source={[
+        {
+          src: 'https://example.invalid/missing.m3u8',
+          format: 'hls',
+          title: 'Broken HLS'
+        },
+        {
+          src: 'https://vjs.zencdn.net/v/oceans.mp4',
+          poster: 'https://vjs.zencdn.net/v/oceans.png',
+          title: "Disney's Oceans"
+        }
+      ]}
+      plugins={[
+        ui({ keyboard: { global: true } }),
+        hls({ forceHLS: true })
+      ]}
+    />
+  )
+}
+`
+  },
+  {
     id: 'playlist',
     label: 'Playlist',
     code: `import Player from '@nusaplayer/react'

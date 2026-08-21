@@ -18,7 +18,7 @@ export interface ReactNusaPlayerProps extends Omit<PlayerOptions, 'source'> {
   aspectRatio?: number
   plugins?: PlayerPlugin[]
   onEvent?: (e: PlayerEvent) => void
-  source?: Source | Promise<Source>
+  source?: Source | Source[] | Promise<Source | Source[]>
 }
 
 const ReactNusaPlayer = forwardRef((props: ReactNusaPlayerProps, ref: Ref<Player | null>) => {
@@ -58,7 +58,7 @@ const ReactNusaPlayer = forwardRef((props: ReactNusaPlayerProps, ref: Ref<Player
       source &&
       (source instanceof Promise
         ? preSource != source
-        : source.src && (preSource as Source)?.src !== source.src)
+        : sourceKey(source) !== sourceKey(preSource as Source | Source[] | undefined))
     ) {
       player.current!.changeSource(source)
     }
@@ -138,6 +138,12 @@ export function usePrevious<T>(value: T): T | undefined {
   }, [value])
 
   return ref.current
+}
+
+function sourceKey(source?: Source | Source[]) {
+  if (!source) return ''
+  if (Array.isArray(source)) return source.map((item) => item.src).join('\n')
+  return source.src
 }
 
 export * from '@nusaplayer/core'
