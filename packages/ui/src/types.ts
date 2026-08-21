@@ -26,6 +26,16 @@ export type Subtitle = {
   onChange?: (s: SubtitleSource) => void | Promise<string>
 }
 
+export type ContextMenuItem = {
+  name: string
+  key?: string
+  checked?: boolean
+  disabled?: boolean
+  hidden?: boolean
+  separator?: boolean
+  onClick?: (player: Player) => void | Promise<void>
+}
+
 export type MenuBar<
   T = {
     name: string
@@ -196,6 +206,12 @@ export type UiConfig = {
 
   menu?: MenuBar[]
 
+  /**
+   * Right-click menu. Default: play, mute, loop, copy URL.
+   * `false` keeps the browser menu. An array appends extra items.
+   */
+  contextmenu?: false | ContextMenuItem[]
+
   errorBuilder?: (error: ErrorPayload, target: HTMLDivElement, cb: (error: ErrorPayload) => void) => void
 
   icons?: {
@@ -314,6 +330,11 @@ export interface UIInterface extends PlayerPlugin {
     unregister: (key: string) => void
     select: (name: string, index: number, shouldBeCallFn?: Boolean) => void
     updateLabel: (key: string, text: string) => void
+  }
+
+  contextmenu?: {
+    register: (item: ContextMenuItem | ContextMenuItem[]) => void
+    unregister: (key: string) => void
   }
 
   toggleController: () => void

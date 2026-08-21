@@ -17,6 +17,7 @@ import renderError from './components/Error'
 import renderLoading from './components/Loading'
 import renderMask from './components/Mask'
 import renderMenubar from './components/Menubar'
+import renderContextMenu from './components/ContextMenu'
 import renderNotice from './components/Notice'
 import renderToast from './components/Toast'
 import renderSetting from './components/Setting'
@@ -151,6 +152,7 @@ class UI implements UIInterface {
     renderSetting(this)
 
     renderMenubar(this)
+    renderContextMenu(this)
     renderSubtitle(this)
 
     registerSpeedSetting(this)

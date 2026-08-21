@@ -67,6 +67,7 @@ ui({
   thumbnails: { src: '/sprite.jpg', number: 100 },
   highlight: { source: [{ time: 12, text: 'Intro' }] },
   menu: [],
+  contextmenu: [],
   icons: {}
 })
 ```
@@ -79,6 +80,7 @@ ui({
 | `keyboard.global` | `false` | Shortcuts work even when the player is not focused |
 | `screenshot` | `false` | Saves a PNG of the current frame |
 | `settings` | `['loop']` | Pass `false` to hide the extras |
+| `contextmenu` | built-in | `false` keeps the browser menu; an array appends items |
 
 Web / native fullscreen on iPhone uses `env(safe-area-inset-*)` so controls clear the notch and home indicator. The page needs `viewport-fit=cover` on its viewport meta tag.
 
@@ -168,6 +170,29 @@ player.context.ui.menu.updateLabel('Quality', '1080P')
 ```
 
 `anchor: 'settings'` places the control next to the gear (used for quality on desktop).
+
+## Context menu
+
+Right-click the player (desktop) for play, mute, loop, screenshot, PiP, fullscreen, and copy URL. Mobile keeps the native menu so it does not fight long-press seek.
+
+```js
+ui({
+  contextmenu: [
+    {
+      key: 'docs',
+      name: 'Docs',
+      onClick() {
+        window.open('https://nusaplayer.vercel.app/docs', '_blank')
+      }
+    }
+  ]
+})
+
+player.context.ui.contextmenu.register({ key: 'reload', name: 'Reload', onClick: () => player.load() })
+player.context.ui.contextmenu.unregister('docs')
+```
+
+`contextmenu: false` restores the browser menu.
 
 ## Custom setting
 
