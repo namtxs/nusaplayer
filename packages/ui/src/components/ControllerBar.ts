@@ -1,6 +1,6 @@
 import { $, isMobile } from '@nusaplayer/core'
 import { Icons } from '../functions/icons'
-import { controllerHidden, hidden, icon, off, on, tooltip } from '../style'
+import { controllerHidden, hidden, icon, off, on, tooltip, fullscreenSafeArea } from '../style'
 import { screenShot } from '../utils'
 
 import type { UIInterface } from '../types'
@@ -18,11 +18,11 @@ export const controlBar = $.css({
   height: 'var(--control-bar-height)',
   color: '#fff',
 
-  // https://developer.mozilla.org/zh-CN/docs/Web/CSS/env
-  //TODO: support display-mode
-  // '@media (display-mode: fullscreen)': {
-  //   'padding-top': 'constant(safe-area-inset-top)',
-  // },
+  ...fullscreenSafeArea({
+    top: isMobile ? '0.4em' : '0.5em',
+    x: isMobile ? '0.3em' : '0.5em',
+    grow: true
+  }),
 
   '&::before': {
     position: 'absolute',

@@ -78,7 +78,9 @@ ui({
 | `theme.progress.position` | `'top'` | Bar sits above the control row |
 | `keyboard.global` | `false` | Shortcuts work even when the player is not focused |
 | `screenshot` | `false` | Saves a PNG of the current frame |
-| `settings` | `['loop']` | Pass `false` to hide the panel extras |
+| `settings` | `['loop']` | Pass `false` to hide the extras |
+
+Web / native fullscreen on iPhone uses `env(safe-area-inset-*)` so controls clear the notch and home indicator. The page needs `viewport-fit=cover` on its viewport meta tag.
 
 Show the title in the header: set `source.title` and keep `theme.controller.header` truthy (default).
 

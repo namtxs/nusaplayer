@@ -4,7 +4,7 @@ import { Icons } from '../functions/icons'
 import type { Subtitle as SubtitleConfig, SubtitleSource, UIInterface } from '../types'
 import { assToVtt, srtToVtt, vttToBlob, applyVttColors, layoutVttCue } from './Subtitle.utils'
 import { clamp } from '../utils'
-import { controllerHidden } from '../style'
+import { controllerHidden, fullscreen, webFullScreen } from '../style'
 
 const SETTING_KEY = 'Subtitle'
 
@@ -103,7 +103,10 @@ export class Subtitle {
               bottom: `var(--np-cue-auto-bottom, ${marginBottom || bottom || '2.2em'})`,
               transition: 'bottom 0.3s'
             },
-            [`@global .${controllerHidden} & > p[data-np-cue-auto]`]: { bottom: 0 }
+            [`@global .${controllerHidden} & > p[data-np-cue-auto]`]: { bottom: 0 },
+            [`@global .${fullscreen} & > p[data-np-cue-auto], @global .${webFullScreen} & > p[data-np-cue-auto]`]: {
+              bottom: `calc(var(--np-cue-auto-bottom, ${marginBottom || bottom || '2.2em'}) + env(safe-area-inset-bottom, 0px))`
+            }
           }
         )
       )}`,

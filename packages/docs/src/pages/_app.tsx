@@ -33,7 +33,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <MDXProvider components={mdxComponents}>
       <Head>
         <title>{titleFor(pathname)}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="#0c0c0d" />
       </Head>
       <Shell variant={variant(pathname)}>

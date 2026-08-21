@@ -1,6 +1,6 @@
 import { $, isIOS, isMobile } from '@nusaplayer/core'
 import { Icons } from '../functions/icons'
-import { controllerHidden, icon, off, on, tooltip } from '../style'
+import { controllerHidden, icon, off, on, tooltip, fullscreenSafeArea } from '../style'
 import { formatTime, screenShot } from '../utils'
 import renderVolumeBar from './VolumeBar'
 import renderProgress from './Progress'
@@ -44,10 +44,7 @@ export const controllerBottomWrap = $.css({
     'background-image': 'linear-gradient(transparent, rgba(0, 0, 0, .72))'
   },
 
-  //TODO: support display-mode
-  // '@media (display-mode: fullscreen)': {
-  //   'padding-bottom': 'env(safe-area-inset-bottom)'
-  // },
+  ...fullscreenSafeArea({ bottom: '0px', x: isMobile ? '0.3em' : '0.5em' }),
 
   [`@global .${controllerHidden} &`]: {
     'pointer-events': 'none',

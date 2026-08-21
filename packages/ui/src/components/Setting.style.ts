@@ -1,4 +1,5 @@
 import { $, isMobile } from '@nusaplayer/core'
+import { fullscreen, webFullScreen } from '../style'
 
 export const activeCls = $.css('display: block;')
 
@@ -32,7 +33,15 @@ export const settingCls = (position: 'top' | 'bottom') =>
 
         '& > div': { display: 'none', 'font-size': '0.875em' },
 
-        [`& > div.${activeCls}`]: { display: 'block' }
+        [`& > div.${activeCls}`]: { display: 'block' },
+
+        [`@global .${fullscreen} &, @global .${webFullScreen} &`]: {
+          right: `calc(${isMobile ? '0.35em' : '1em'} + env(safe-area-inset-right, 0px))`,
+          [position]:
+            position == 'top'
+              ? 'calc(var(--control-bar-height) + env(safe-area-inset-top, 0px))'
+              : 'calc(2.5em + env(safe-area-inset-bottom, 0px))'
+        }
       },
       isMobile && {
         'max-width': 'calc(100% - 0.7em)'

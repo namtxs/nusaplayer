@@ -71,6 +71,21 @@ export const webFullScreen = $.css`
   top: 0;
   bottom: 0;`
 
+/** Extra padding when the player fills the screen (notch / home indicator). */
+export const fullscreenSafeArea = (pad: { top?: string; bottom?: string; x: string; grow?: boolean }) => ({
+  [`@global .${fullscreen} &, @global .${webFullScreen} &`]: {
+    ...(pad.grow
+      ? { height: 'auto', 'min-height': 'var(--control-bar-height)', 'box-sizing': 'content-box' as const }
+      : {}),
+    ...(pad.top != null ? { 'padding-top': `calc(${pad.top} + env(safe-area-inset-top, 0px))` } : {}),
+    ...(pad.bottom != null
+      ? { 'padding-bottom': `calc(${pad.bottom} + env(safe-area-inset-bottom, 0px))` }
+      : {}),
+    'padding-left': `calc(${pad.x} + env(safe-area-inset-left, 0px))`,
+    'padding-right': `calc(${pad.x} + env(safe-area-inset-right, 0px))`
+  }
+})
+
 export const icon = $.css({
   background: 'none',
   border: 'none',
