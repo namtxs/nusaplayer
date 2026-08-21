@@ -24,3 +24,7 @@ Player.make('#player', {
 ```
 
 The icon only appears when `chrome.cast` is available (typically desktop Chrome on https).
+
+While a session is connected, play / pause / seek / volume on this player control the TV. Local playback is paused so audio is not doubled. Click the icon again to stop casting and resume here. Source changes reload media on the receiver.
+
+Events: `caststart`, `castend`, `cast-error`.

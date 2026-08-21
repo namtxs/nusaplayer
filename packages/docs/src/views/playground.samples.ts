@@ -84,6 +84,38 @@ export default function App() {
 `
   },
   {
+    id: 'vast',
+    label: 'VAST',
+    code: `import Player from '@nusaplayer/react'
+import ui from '@nusaplayer/ui'
+import hls from '@nusaplayer/hls'
+import { ad } from '@nusaplayer/plugins'
+
+export default function App() {
+  return (
+    <Player
+      source={{
+        src: 'https://vjs.zencdn.net/v/oceans.mp4',
+        poster: 'https://vjs.zencdn.net/v/oceans.png',
+        title: "Disney's Oceans"
+      }}
+      plugins={[
+        ui({ keyboard: { global: true } }),
+        hls({ qualityControl: false }),
+        ad({
+          autoplay: true,
+          plugins: [hls({ qualityControl: false })],
+          vast:
+            'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=' +
+            Date.now()
+        })
+      ]}
+    />
+  )
+}
+`
+  },
+  {
     id: 'playlist',
     label: 'Playlist',
     code: `import Player from '@nusaplayer/react'

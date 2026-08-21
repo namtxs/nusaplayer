@@ -9,7 +9,7 @@ import mpegts from '@nusaplayer/mpegts'
 import torrent from '@nusaplayer/torrent'
 import shaka from '@nusaplayer/shaka'
 import Danmaku from '@nusaplayer/danmaku'
-import { AirPlay, Chromecast, Playlist } from '@nusaplayer/plugins'
+import { ad, AirPlay, Chromecast, Playlist } from '@nusaplayer/plugins'
 import { PLAYGROUND_SAMPLES, toLiveCode } from './playground.samples'
 import { CodeEditor } from './playground-editor'
 import style from './playground.module.scss'
@@ -26,7 +26,8 @@ const scope = {
   Danmaku,
   Playlist,
   Chromecast,
-  AirPlay
+  AirPlay,
+  ad
 }
 
 class PreviewBoundary extends Component<{ resetKey: number; children: React.ReactNode }, { error?: Error }> {

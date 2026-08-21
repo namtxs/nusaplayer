@@ -20,6 +20,8 @@
   "WebFullscreen": "网页全屏",
   "Settings": "设置",
   "Picture in Picture": "画中画",
+  "Chromecast": "投屏",
+  "Casting to %s": "正在投屏到 %s",
 
   "Danmaku": "弹幕",
   "Heatmap": "热力图",
