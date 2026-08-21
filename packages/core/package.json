@@ -1,6 +1,6 @@
 {
   "name": "@nusaplayer/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NusaPlayer core — HTML5 video player engine.",
   "type": "module",
   "main": "./dist/index.es.js",
