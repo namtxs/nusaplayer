@@ -103,6 +103,7 @@ const init = () => {
             danmaku: DEMO.danmaku,
             subtitles: [
               { name: 'English', default: true, src: DEMO.enSrt },
+              { name: 'English (styled)', src: DEMO.styledVtt },
               { name: 'Indonesia', src: DEMO.idSrt }
             ],
             highlights: highlight

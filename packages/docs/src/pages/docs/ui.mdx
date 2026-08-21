@@ -84,13 +84,14 @@ Show the title in the header: set `source.title` and keep `theme.controller.head
 
 ## Subtitles
 
-SRT and WebVTT.
+SRT, WebVTT, and ASS. Cue tags (`<b>`, `<i>`, `<c.colorRRGGBB>`) and ASS overrides (`\b`, `\i`, `\c`, `\an`) are rendered. Positioned cues follow VTT `line` / `align` (and ASS `\an`).
 
 ```js
 ui({
   subtitle: {
     source: [
       { name: 'English', default: true, src: '/demo/en.srt' },
+      { name: 'English (styled)', src: '/demo/styled.vtt' },
       { name: 'Indonesia', src: '/demo/id.srt' }
     ],
     fontSize: 20,

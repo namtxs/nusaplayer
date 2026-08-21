@@ -194,6 +194,7 @@ export default function App() {
           subtitle: {
             source: [
               { name: 'English', default: true, src: '/demo/en.srt' },
+              { name: 'English (styled)', src: '/demo/styled.vtt' },
               { name: 'Indonesia', src: '/demo/id.srt' }
             ]
           }

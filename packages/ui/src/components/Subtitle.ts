@@ -2,13 +2,9 @@ import type { PartialRequired, Player } from '@nusaplayer/core'
 import { $, isMobile } from '@nusaplayer/core'
 import { Icons } from '../functions/icons'
 import type { Subtitle as SubtitleConfig, SubtitleSource, UIInterface } from '../types'
-import { assToVtt, srtToVtt, vttToBlob } from './Subtitle.utils'
+import { assToVtt, srtToVtt, vttToBlob, applyVttColors, layoutVttCue } from './Subtitle.utils'
 import { clamp } from '../utils'
 import { controllerHidden } from '../style'
-
-// TODO: support style & tag
-// 00:03:31.485 --> 00:03:31.719 align:start position:0% line:0%
-// <c.color96D2D3>Hey! nanika ga okoru spe cial </c><c.colorFEFEFE>night</c>
 
 const SETTING_KEY = 'Subtitle'
 
@@ -81,6 +77,8 @@ export class Subtitle {
           {
             left: '2%',
             right: '2%',
+            top: '2%',
+            bottom: '2%',
             'text-align': 'center',
             'pointer-events': 'none',
             position: 'absolute',
@@ -91,7 +89,6 @@ export class Subtitle {
             'text-shadow':
               shadow ||
               '1px 0 1px #000, 0 1px 1px #000, -1px 0 1px #000, 0 -1px 1px #000, 1px 1px 1px #000, -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000',
-            bottom: bottom || '2%',
             'font-size': `${(fontSize || (isMobile ? 16 : 20)) / 16}em`,
 
             '& > p': {
@@ -101,12 +98,12 @@ export class Subtitle {
                 background: background ? 'rgba(8, 8, 8, 0.75)' : 'inherit',
                 padding: '0 0.25em'
               }
-            }
-          },
-          !isMobile && {
-            'margin-bottom': marginBottom || '2.2em',
-            transition: 'margin 0.3s',
-            [`@global .${controllerHidden} &`]: { 'margin-bottom': 0 }
+            },
+            '& > p[data-np-cue-auto]': {
+              bottom: `var(--np-cue-auto-bottom, ${marginBottom || bottom || '2.2em'})`,
+              transition: 'bottom 0.3s'
+            },
+            [`@global .${controllerHidden} & > p[data-np-cue-auto]`]: { bottom: 0 }
           }
         )
       )}`,
@@ -175,25 +172,29 @@ export class Subtitle {
   }
 
   update = () => {
-    let html = ''
+    this.$dom.replaceChildren()
     const activeCues = this.$track.track.activeCues
-    if (activeCues?.length) {
-      for (let i = 0; i < activeCues.length; i++) {
-        const activeCue = activeCues[i] as VTTCue | undefined
-        if (activeCue) {
-          // TODO: FIX
-          // "<b>Otomi, I don't see this \nfriend you said was here.</b>"
-          // <p><span><b>xxx</b></span></p>
-          // <p><b><span>xxx</span></b></p>
-          html += activeCue.text
-            .replace(/\\h/g, '&nbsp;')
-            .split(/\r?\n/)
-            .map((item: string) => `<p><span>${item}</span></p>`)
-            .join('')
-        }
+    if (!activeCues?.length) return
+
+    const autoBottom = this.options.bottom || (isMobile ? '0px' : this.options.marginBottom || '2.2em')
+    this.$dom.style.setProperty('--np-cue-auto-bottom', autoBottom)
+
+    for (let i = 0; i < activeCues.length; i++) {
+      const activeCue = activeCues[i] as VTTCue | undefined
+      if (!activeCue) continue
+
+      const line = document.createElement('p')
+      const span = document.createElement('span')
+      if (typeof activeCue.getCueAsHTML === 'function') {
+        span.appendChild(activeCue.getCueAsHTML())
+      } else {
+        span.textContent = activeCue.text.replace(/\\h/g, '\u00A0')
       }
+      applyVttColors(span)
+      layoutVttCue(line, activeCue)
+      line.appendChild(span)
+      this.$dom.appendChild(line)
     }
-    this.$dom.innerHTML = html
   }
 
   show() {

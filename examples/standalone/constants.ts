@@ -9,6 +9,7 @@ export const DEMO = {
   flv: 'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv',
   torrent: 'https://webtorrent.io/torrents/sintel.torrent',
   enSrt: '/demo/en.srt',
+  styledVtt: '/demo/styled.vtt',
   idSrt: '/demo/id.srt',
   danmaku: '/demo/danmaku.xml'
 }

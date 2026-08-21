@@ -88,6 +88,7 @@ export default function StreamTester() {
               ? {
                   source: [
                     { name: 'English', default: true, src: DEMO.enSrt },
+                    { name: 'English (styled)', src: DEMO.styledVtt },
                     { name: 'Indonesia', src: DEMO.idSrt }
                   ]
                 }
