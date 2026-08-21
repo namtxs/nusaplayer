@@ -33,6 +33,7 @@ export type ContextMenuItem = {
   disabled?: boolean
   hidden?: boolean
   separator?: boolean
+  href?: string
   onClick?: (player: Player) => void | Promise<void>
 }
 

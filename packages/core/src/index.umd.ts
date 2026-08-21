@@ -1,4 +1,4 @@
-import { EVENTS, OH_EVENTS, PLAYER_EVENTS, VIDEO_EVENTS } from './constants'
+import { EVENTS, HOMEPAGE, OH_EVENTS, PLAYER_EVENTS, VIDEO_EVENTS } from './constants'
 import { Player } from './player'
 import { $ } from './utils/dom'
 import * as platform from './utils/platform'
@@ -13,7 +13,8 @@ export default Object.assign(
     EVENTS,
     OH_EVENTS,
     VIDEO_EVENTS,
-    PLAYER_EVENTS
+    PLAYER_EVENTS,
+    HOMEPAGE
   },
 
   utils,

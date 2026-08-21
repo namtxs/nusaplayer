@@ -39,3 +39,5 @@ export const OH_EVENTS = [
 ] as const
 
 export const EVENTS = [...VIDEO_EVENTS, ...PLAYER_EVENTS, ...OH_EVENTS] as const
+
+export const HOMEPAGE = 'https://github.com/namtxs/nusaplayer'

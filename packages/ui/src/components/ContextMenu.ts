@@ -1,5 +1,6 @@
-import Player, { $, isMobile } from '@nusaplayer/core'
+import Player, { $, isMobile, HOMEPAGE } from '@nusaplayer/core'
 import { screenShot } from '../utils'
+import renderAbout from './About'
 import type { ContextMenuItem, UIInterface } from '../types'
 
 const menuCls = $.css({
@@ -132,6 +133,7 @@ export default function renderContextMenu(it: UIInterface) {
 
   const extras: ContextMenuItem[] = Array.isArray(config.contextmenu) ? [...config.contextmenu] : []
   const $menu = $.create(`ul.${menuCls}`, { hidden: '', role: 'menu' })
+  const about = renderAbout(it)
   let open = false
 
   function hide() {
@@ -157,14 +159,17 @@ export default function renderContextMenu(it: UIInterface) {
 
   function renderItems() {
     $menu.replaceChildren()
-    const rows = [
+    const rows: ContextMenuItem[] = [
       ...builtins(player, it),
       ...extras,
-      { key: 'sep-about', name: '', separator: true } as ContextMenuItem,
+      { key: 'sep-about', name: '', separator: true },
       {
         key: 'about',
-        name: `NusaPlayer ${Player.version}`,
-        disabled: true
+        name: player.locales.get('About NusaPlayer'),
+        href: HOMEPAGE,
+        onClick: () => {
+          about.show()
+        }
       }
     ]
 
@@ -172,6 +177,24 @@ export default function renderContextMenu(it: UIInterface) {
       if (row.hidden) continue
       if (row.separator) {
         $menu.appendChild($.create(`li.${sepCls}`))
+        continue
+      }
+      if (row.href && !row.disabled) {
+        const $item = $.create('li', { role: 'menuitem' })
+        const $link = $.create(`a.${itemCls}`, {
+          href: row.href,
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        })
+        $link.style.cssText = 'color:inherit;text-decoration:none;box-sizing:border-box'
+        $link.appendChild(document.createTextNode(row.name))
+        $link.addEventListener('click', (e) => {
+          e.stopPropagation()
+          void row.onClick?.(player)
+          hide()
+        })
+        $item.appendChild($link)
+        $menu.appendChild($item)
         continue
       }
       const $item = $.create(`li.${itemCls}`, { role: 'menuitem' })
@@ -216,7 +239,10 @@ export default function renderContextMenu(it: UIInterface) {
   }
 
   function onKey(e: KeyboardEvent) {
-    if (e.key === 'Escape') hide()
+    if (e.key === 'Escape') {
+      hide()
+      about.hide()
+    }
   }
 
   player.$root.addEventListener('contextmenu', show)
@@ -225,6 +251,7 @@ export default function renderContextMenu(it: UIInterface) {
   document.addEventListener('keydown', onKey)
   player.on('destroy', () => {
     hide()
+    about.hide()
     player.$root.removeEventListener('contextmenu', show)
     document.removeEventListener('pointerdown', onDocPointer)
     document.removeEventListener('contextmenu', onDocContext)

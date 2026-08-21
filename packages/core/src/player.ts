@@ -1,4 +1,4 @@
-import { EVENTS, PLAYER_EVENTS, VIDEO_EVENTS } from './constants'
+import { EVENTS, HOMEPAGE, PLAYER_EVENTS, VIDEO_EVENTS } from './constants'
 import EventEmitter from './event'
 import I18n from './i18n'
 import $ from './utils/dom'
@@ -633,14 +633,19 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   static get version() {
     return __VERSION__
   }
+
+  static get homepage() {
+    return HOMEPAGE
+  }
 }
 
 if (globalThis.window) {
   console.log(
-    '%cNusaPlayer%c v%s\n %c\nHTML5 video player.\n',
-    'font-size:32px;',
-    'font-size:12px;color:#999999;',
+    '%cNusaPlayer%c v%s\n%c%s',
+    'font-size:22px;font-weight:700;color:#fb7299;',
+    'font-size:12px;color:#888;',
     Player.version,
-    'font-size:14px;'
+    'font-size:12px;color:#3b82f6;',
+    Player.homepage
   )
 }
