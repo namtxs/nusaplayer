@@ -11,6 +11,8 @@ HTML5 video player. Plugins for HLS, DASH, FLV, danmaku, playlist, and React.
 
 [Docs](https://nusaplayer.vercel.app/) · [Playground](https://nusaplayer.vercel.app/playground/) · [Streams](https://nusaplayer.vercel.app/player/)
 
+[![NusaPlayer](media/player.png)](https://nusaplayer.vercel.app/)
+
 ```js
 import Player from '@nusaplayer/core'
 import ui from '@nusaplayer/ui'
