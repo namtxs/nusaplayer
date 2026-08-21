@@ -83,6 +83,23 @@ function build(
   Object.keys(rules)?.forEach((key) => {
     if (isGlobal(key)) {
       const rawKey = key
+      const globalParts = splitSelector(key)
+        .map((part) => part.trim())
+        .filter(Boolean)
+      if (globalParts.length > 1) {
+        for (const part of globalParts) {
+          const gk = part.startsWith('@global') ? part : `@global ${part}`
+          mergeDeep(
+            css,
+            build(selector, {
+              mediaQuery,
+              rules: { [gk]: rules[rawKey] },
+              globalSelector
+            })
+          )
+        }
+        return
+      }
       key = key.substring(8)
       const selfKey = key.indexOf('&')
       let _selector

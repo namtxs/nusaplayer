@@ -35,7 +35,14 @@ export const settingCls = (position: 'top' | 'bottom') =>
 
         [`& > div.${activeCls}`]: { display: 'block' },
 
-        [`@global .${fullscreen} &, @global .${webFullScreen} &`]: {
+        [`@global .${fullscreen} &`]: {
+          right: `calc(${isMobile ? '0.35em' : '1em'} + env(safe-area-inset-right, 0px))`,
+          [position]:
+            position == 'top'
+              ? 'calc(var(--control-bar-height) + env(safe-area-inset-top, 0px))'
+              : 'calc(2.5em + env(safe-area-inset-bottom, 0px))'
+        },
+        [`@global .${webFullScreen} &`]: {
           right: `calc(${isMobile ? '0.35em' : '1em'} + env(safe-area-inset-right, 0px))`,
           [position]:
             position == 'top'
