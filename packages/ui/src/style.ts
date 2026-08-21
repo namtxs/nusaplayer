@@ -28,9 +28,6 @@ export const controllerHidden = $.css({
 // data-error="true"
 export const error = $.cls('error')
 
-// data-contextmenu="true"
-export const DATA_CONTEXTMENU_ATTR_NAME = 'data-contextmenu'
-
 export const root = (config: UiConfig) => {
   return $.css(
     Object.assign(

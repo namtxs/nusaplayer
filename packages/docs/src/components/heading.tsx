@@ -1,4 +1,4 @@
-import { isValidElement, useEffect, useState, type HTMLAttributes, type ReactNode } from 'react'
+import { isValidElement, type HTMLAttributes, type ReactNode } from 'react'
 
 export function headingText(node: ReactNode): string {
   if (node == null || typeof node === 'boolean') return ''

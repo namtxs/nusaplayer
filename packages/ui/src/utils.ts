@@ -114,10 +114,6 @@ export function removeClass(target: HTMLElement, className: string) {
   return target
 }
 
-export function toggleClass(target: HTMLElement, className: string) {
-  return target.classList.toggle(className)
-}
-
 export function hasClass(target: HTMLElement, className: string) {
   return target.classList.contains(className)
 }

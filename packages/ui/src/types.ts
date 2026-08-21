@@ -222,10 +222,6 @@ export type UiConfig = {
     danmaku?: string
     playlist?: string
   }
-
-  /*  --- WIP ---  */
-
-  // contextmenu?: []
 }
 
 export type NoticePosition =
