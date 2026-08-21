@@ -99,6 +99,9 @@ export const switcherContainer = $.css(`
 // `selectedText` >
 export const nextLabelText = $.css(`
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8em;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.8em;
 `)
@@ -138,6 +141,14 @@ export const settingItemLeft = $.css({
   display: 'flex',
   'align-items': 'center',
   'margin-right': '10px',
+  'min-width': 0,
+  flex: 1,
+
+  '& > span': {
+    overflow: 'hidden',
+    'text-overflow': 'ellipsis',
+    'white-space': 'nowrap'
+  },
 
   '& > svg': {
     width: '1.5em',

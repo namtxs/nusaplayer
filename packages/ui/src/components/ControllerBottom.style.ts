@@ -93,14 +93,19 @@ export const dropdownHoverable = $.css(
 )
 
 export const dropItem = $.css({
-  padding: '0 0.5em',
-  'min-width': '6em',
-  display: 'block',
-  height: '2.4em',
-  'line-height': '2.4em',
+  padding: '0.45em 0.75em',
+  'min-width': '8em',
+  'max-width': '14em',
+  display: 'flex',
+  'align-items': 'center',
+  'justify-content': 'center',
+  'min-height': '2.4em',
+  'line-height': '1.3',
+  'box-sizing': 'border-box',
   cursor: 'pointer',
   'text-align': 'center',
-  'word-break': 'keep-all',
+  'overflow-wrap': 'anywhere',
+  'word-break': 'break-word',
 
   '&:nth-last-child(1)': {
     'margin-bottom': '0px'
