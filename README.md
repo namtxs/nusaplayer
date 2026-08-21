@@ -1,7 +1,7 @@
 # NusaPlayer
 
 [![CI](https://github.com/namtxs/nusaplayer/actions/workflows/ci.yml/badge.svg)](https://github.com/namtxs/nusaplayer/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/namtxs/nusaplayer)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/namtxs/nusaplayer?style=social)](https://github.com/namtxs/nusaplayer)
 [![pnpm](https://img.shields.io/badge/pnpm-9-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
