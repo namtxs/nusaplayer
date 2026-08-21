@@ -1,6 +1,6 @@
 {
   "name": "@nusaplayer/react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React wrapper for NusaPlayer.",
   "type": "module",
   "main": "./dist/index.es.js",
@@ -21,7 +21,7 @@
     "src"
   ],
   "peerDependencies": {
-    "@nusaplayer/core": ">=1.0.1",
+    "@nusaplayer/core": ">=1.0.2",
     "react": ">=16",
     "react-dom": ">=16"
   },

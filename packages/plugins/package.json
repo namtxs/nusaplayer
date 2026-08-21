@@ -1,6 +1,6 @@
 {
   "name": "@nusaplayer/plugins",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "NusaPlayer contributors",
   "description": "NusaPlayer plugin",
   "keywords": [
@@ -16,8 +16,8 @@
     "build": "node build-plugins.js && tsc --emitDeclarationOnly"
   },
   "peerDependencies": {
-    "@nusaplayer/core": ">=1.0.1",
-    "@nusaplayer/ui": ">=1.0.1",
+    "@nusaplayer/core": ">=1.0.2",
+    "@nusaplayer/ui": ">=1.0.2",
     "m3u8-parser": "^7.1.0"
   },
   "devDependencies": {
