@@ -56,6 +56,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   sources: Source[] = [{ src: '' }]
   sourceIndex = 0
   private fallbackLock = false
+  private destroyed = false
 
   constructor(el: HTMLElement | string, options?: PlayerOptions | string) {
     this.container = typeof el == 'string' ? document.querySelector(el)! : el
@@ -524,6 +525,9 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   }
 
   async destroy() {
+    if (this.destroyed) return
+    this.destroyed = true
+
     const idx = Player.players.indexOf(this)
     if (idx >= 0) Player.players.splice(idx, 1)
 

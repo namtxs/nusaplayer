@@ -1,15 +1,13 @@
 import type { PlayerEvent, PlayerOptions, PlayerPlugin, Source } from '@nusaplayer/core'
 import Player from '@nusaplayer/core'
 import {
-  DependencyList,
-  EffectCallback,
   forwardRef,
-  Ref,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef
+  useRef,
+  useState,
+  type Ref
 } from 'react'
 
 export interface ReactNusaPlayerProps extends Omit<PlayerOptions, 'source'> {
@@ -24,78 +22,98 @@ export interface ReactNusaPlayerProps extends Omit<PlayerOptions, 'source'> {
 const ReactNusaPlayer = forwardRef((props: ReactNusaPlayerProps, ref: Ref<Player | null>) => {
   const { playing, duration, aspectRatio = 9 / 16, plugins = [], onEvent, source, ...rest } = props
 
+  const hostRef = useRef<HTMLDivElement>(null)
+  const playerRef = useRef<Player | null>(null)
   const onEventRef = useRef(onEvent)
-  onEventRef.current = onEvent
-
-  const player = useRef<Player | null>(null)
+  const pluginsRef = useRef(plugins)
+  const restRef = useRef(rest)
+  const sourceRef = useRef(source)
   const preSource = usePrevious(source)
+  const [ready, setReady] = useState(false)
 
-  const isReady = player.current && player.current.$root
-
-  const onRefChange = useCallback((node: HTMLDivElement) => {
-    if (node !== null && !player.current) {
-      const initialParams =
-        source instanceof Promise ? rest : source ? { ...rest, source } : rest
-      player.current = Player.make(node, initialParams).use(plugins).create()
-      if (source instanceof Promise) player.current.changeSource(source!)
-      if (typeof duration == 'number') player.current.seek(duration / 1000)
-      if (onEvent) {
-        player.current.on((payload: PlayerEvent) => onEventRef.current?.(payload))
-      }
-    }
-  }, [])
-
-  useEffectIf(isReady, () => {
-    if (playing) {
-      if (!player.current!.isPlaying) player.current!.play()
-    } else {
-      if (player.current!.isPlaying) player.current!.pause()
-    }
-  }, [playing])
-
-  useEffectIf(isReady, () => {
-    if (
-      source &&
-      (source instanceof Promise
-        ? preSource != source
-        : sourceKey(source) !== sourceKey(preSource as Source | Source[] | undefined))
-    ) {
-      player.current!.changeSource(source)
-    }
-  }, [source])
-
-  useEffectIf(
-    isReady && typeof duration === 'number',
-    () => {
-      player.current!.seek(duration! / 1000)
-    },
-    [duration]
-  )
-
-  useEffectIf(isReady, () => {
-    if (rest.muted) {
-      player.current!.mute()
-    } else {
-      player.current!.unmute()
-    }
-  }, [rest.muted])
-
-  useEffectIf(isReady && typeof rest.playbackRate === 'number', () => {
-    player.current!.setPlaybackRate(rest.playbackRate!)
-  }, [rest.playbackRate])
+  onEventRef.current = onEvent
+  pluginsRef.current = plugins
+  restRef.current = rest
+  sourceRef.current = source
 
   useEffect(() => {
+    const node = hostRef.current
+    if (!node) return
+
+    let cancelled = false
+    const initialSource = sourceRef.current
+    const initialRest = restRef.current
+    const initialParams =
+      initialSource instanceof Promise
+        ? initialRest
+        : initialSource
+          ? { ...initialRest, source: initialSource }
+          : initialRest
+
+    const instance = Player.make(node, initialParams).use(pluginsRef.current).create()
+    if (cancelled) {
+      void instance.destroy()
+      return
+    }
+
+    playerRef.current = instance
+    if (initialSource instanceof Promise) instance.changeSource(initialSource)
+    instance.on((payload: PlayerEvent) => onEventRef.current?.(payload))
+    setReady(true)
+
     return () => {
-      player.current?.destroy()
-      player.current = null
+      cancelled = true
+      setReady(false)
+      playerRef.current = null
+      void instance.destroy()
     }
   }, [])
 
-  useImperativeHandle(ref, () => player.current, [])
+  useEffect(() => {
+    if (!ready || typeof playing !== 'boolean') return
+    const player = playerRef.current
+    if (!player) return
+    if (playing) {
+      if (!player.isPlaying) player.play()
+    } else if (player.isPlaying) {
+      player.pause()
+    }
+  }, [ready, playing])
 
-  return useMemo(() => {
+  useEffect(() => {
+    if (!ready || !source) return
+    const player = playerRef.current
+    if (!player) return
+    const changed =
+      source instanceof Promise
+        ? preSource != source
+        : sourceKey(source) !== sourceKey(preSource as Source | Source[] | undefined)
+    if (changed) player.changeSource(source)
+  }, [ready, source, preSource])
+
+  useEffect(() => {
+    if (!ready || typeof duration !== 'number') return
+    playerRef.current?.seek(duration / 1000)
+  }, [ready, duration])
+
+  useEffect(() => {
+    if (!ready) return
+    const player = playerRef.current
+    if (!player) return
+    if (rest.muted) player.mute()
+    else player.unmute()
+  }, [ready, rest.muted])
+
+  useEffect(() => {
+    if (!ready || typeof rest.playbackRate !== 'number') return
+    playerRef.current?.setPlaybackRate(rest.playbackRate)
+  }, [ready, rest.playbackRate])
+
+  useImperativeHandle(ref, () => playerRef.current, [ready])
+
+  const shell = useMemo(() => {
     if (aspectRatio == 0) {
-      return <div ref={onRefChange}></div>
+      return <div ref={hostRef} />
     }
 
     return (
@@ -115,20 +133,14 @@ const ReactNusaPlayer = forwardRef((props: ReactNusaPlayerProps, ref: Ref<Player
             width: '100%',
             height: '100%'
           }}
-          ref={onRefChange}
-        ></div>
+          ref={hostRef}
+        />
       </div>
     )
   }, [])
-})
 
-const useEffectIf = (where: any, cb: EffectCallback, deps?: DependencyList): void => {
-  useEffect(() => {
-    if (Boolean(where)) {
-      return cb()
-    }
-  }, deps)
-}
+  return shell
+})
 
 export function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>()

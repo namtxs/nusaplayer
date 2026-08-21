@@ -4,7 +4,7 @@
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/@nusaplayer/react?style=flat-square)
 [![npm dm](https://img.shields.io/npm/dm/@nusaplayer/react?style=flat-square)](https://www.npmjs.com/package/@nusaplayer/react)
 
-React wrapper for NusaPlayer. Not compatible with React Strict Mode.
+React wrapper for NusaPlayer.
 
 ## Install
 

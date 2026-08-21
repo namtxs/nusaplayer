@@ -1,6 +1,6 @@
 # @nusaplayer/react
 
-React wrapper around `Player.make`. **Not compatible with React Strict Mode** (`reactStrictMode: false` in Next.js). Live samples: [Playground](/playground).
+React wrapper around `Player.make`. Live samples: [Playground](/playground).
 
 ```bash
 npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/react
@@ -54,7 +54,7 @@ Extends `PlayerOptions` except `source` is optional / thenable.
 | Prop | Type | Notes |
 | --- | --- | --- |
 | `plugins` | `PlayerPlugin[]` | Created **once** when the node mounts. Do not recreate the array every render if you can avoid it. |
-| `source` | `Source \| Promise<Source>` | Calls `changeSource` when `src` changes |
+| `source` | `Source \| Source[] \| Promise<Source \| Source[]>` | Calls `changeSource` when `src` changes. An array is tried in order if a URL fails. |
 | `playing` | `boolean` | Imperative play / pause |
 | `duration` | `number` | Seek to this many **milliseconds** on change |
 | `aspectRatio` | `number` | Default `9 / 16` (height / width padding trick) |

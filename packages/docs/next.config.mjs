@@ -21,7 +21,7 @@ const withMDX = createMDX({
 export default withMDX({
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
   output: 'export',
-  reactStrictMode: false,
+  reactStrictMode: true,
   trailingSlash: true,
   transpilePackages: [
     '@nusaplayer/core',
