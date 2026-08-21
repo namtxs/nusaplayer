@@ -57,6 +57,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   sourceIndex = 0
   private fallbackLock = false
   private destroyed = false
+  private listenerAbort = new AbortController()
 
   constructor(el: HTMLElement | string, options?: PlayerOptions | string) {
     this.container = typeof el == 'string' ? document.querySelector(el)! : el
@@ -97,16 +98,17 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   }
 
   initEvent() {
+    const { signal } = this.listenerAbort
     const errorHandler = (payload: ErrorEvent) => {
-      if (this.$video.error) {
-        this.hasError = true
-        this.emit('error', payload)
-      }
+      if (this.destroyed || !this.$video?.error) return
+      this.hasError = true
+      this.emit('error', payload)
     }
     this.listeners['error'] = errorHandler
-    this.$video.addEventListener('error', (e) => this.listeners['error'](e))
+    this.$video.addEventListener('error', (e) => this.listeners?.error?.(e), { signal })
 
     const eventHandler = (eventName: string, payload: Event) => {
+      if (this.destroyed) return
       this.eventEmitter.emit(eventName, payload)
     }
 
@@ -132,9 +134,9 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
           target.addEventListener(
             name,
             (e) => {
-              this.listeners[polyfillName](polyfillName, e)
+              this.listeners?.[polyfillName]?.(polyfillName, e)
             },
-            { passive: true }
+            { passive: true, signal }
           )
         })
       })
@@ -151,9 +153,9 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
           target.addEventListener(
             eventName,
             (e) => {
-              this.listeners?.[eventName](eventName, e)
+              this.listeners?.[eventName]?.(eventName, e)
             },
-            { passive: true }
+            { passive: true, signal }
           )
         }
       })
@@ -264,6 +266,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   }
 
   emit(name: PlayerEventName, payload?: PlayerEvent['payload']) {
+    if (this.destroyed) return
     if (name === 'error' && this.tryFallback()) return
     this.eventEmitter.emit(name as any, payload)
   }
@@ -275,6 +278,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
   }
 
   private tryFallback() {
+    if (this.destroyed) return false
     if (this.fallbackLock) return true
     const next = this.sources[this.sourceIndex + 1]
     if (!next?.src) return false
@@ -533,6 +537,7 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
 
     const { eventEmitter, loader, plugins, container, $root, $video, isPlaying, isFullScreen, isInPip } = this
 
+    this.listenerAbort.abort()
     eventEmitter.emit('destroy')
     eventEmitter.offAll()
 
@@ -549,6 +554,8 @@ export class Player<Context extends Record<string, any> = Record<string, any>> {
       if (isFullScreen) this.exitFullscreen()
       if (isInPip) this.exitPip()
       if ($video.src?.startsWith('blob:')) URL.revokeObjectURL($video.src)
+      $video.removeAttribute('src')
+      $video.load()
     }
 
     if ($root && container?.contains($root)) container.removeChild($root)
