@@ -1,6 +1,6 @@
 # Ad
 
-Pre-roll image or video overlay with a skip timer. Requires `@nusaplayer/ui`. If the creative is HLS, pass `hls()` (or another loader) in `plugins`.
+Pre-roll image, video, or **VAST** Linear tag. Requires `@nusaplayer/ui`. If the creative is HLS, pass `hls()` in `plugins`.
 
 ```js
 import { ad } from '@nusaplayer/plugins'
@@ -13,32 +13,41 @@ Player.make('#player', {
   .use([
     ui(),
     ad({
-      autoplay: false,
-      image: 'https://vjs.zencdn.net/v/oceans.png',
-      // video: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-      duration: 10,
-      skipDuration: 5,
-      target: 'https://example.com',
-      plugins: [hls({ qualityControl: false })],
-      position: { bottom: '10%', left: '0.3em' },
-      onSkip(remaining) {
-        console.log('skipped with', remaining, 's left')
-      }
+      vast: 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=',
+      autoplay: true,
+      plugins: [hls({ qualityControl: false })]
     })
   ])
   .create()
 ```
 
-UMD: `NusaAd({ ... })`.
+The tag is fetched in the browser (**CORS** must allow your site). Wrappers are followed (max 5). `MediaFile` prefers MP4. Impressions and `start` / quartile / `complete` / `skip` / click tracking pixels are fired.
+
+Still works without VAST:
+
+```js
+ad({
+  autoplay: false,
+  image: 'https://vjs.zencdn.net/v/oceans.png',
+  duration: 10,
+  skipDuration: 5,
+  target: 'https://example.com'
+})
+```
+
+UMD: `NusaAd({ ... })`. Helpers: `loadVast(url)`, `parseVast(xml)` from `@nusaplayer/plugins`.
+
+Events: `adstart`, `adend`, `adskip`, `aderror`.
 
 ## Options
 
 | Option | Type | Notes |
 | --- | --- | --- |
-| `duration` | `number` | Required. Total ad length in seconds |
-| `skipDuration` | `number` | Seconds before Skip is enabled |
+| `vast` | `string` | VAST tag URL. Fills video, duration, skip, and click-through when those options are omitted |
+| `duration` | `number` | Total ad length in seconds (from VAST `<Duration>` if omitted) |
+| `skipDuration` | `number` | Seconds before Skip (from Linear `skipoffset` if omitted) |
 | `image` | `string` | Poster / banner creative |
-| `video` | `string` | Video creative URL |
+| `video` | `string` | Video creative URL (overrides VAST media) |
 | `autoplay` | `boolean` | If false, the user must click to start the ad |
 | `target` | `string` | Click-through URL |
 | `plugins` | `PlayerPlugin[]` | Loaders for the ad video |

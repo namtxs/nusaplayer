@@ -1,4 +1,5 @@
 import { Player, PlayerPlugin, $ } from '@nusaplayer/core'
+import { fireVastUrls, loadVast, type VastTracking } from './vast/parse'
 
 const topRight = $.css({
   position: 'absolute',
@@ -31,6 +32,8 @@ const mute = $.css({
 })
 
 type Options = {
+  /** VAST tag URL (Linear InLine / Wrapper). Fills `video`, `duration`, `skipDuration`, and `target` when omitted. */
+  vast?: string
   video?: string
   image?: string
   position?: {
@@ -42,12 +45,13 @@ type Options = {
   autoplay?: boolean
   plugins?: PlayerPlugin[]
   skipDuration?: number
-  duration: number
+  duration?: number
   target?: string
   onSkip?: (duration: number) => void
 }
 
 export default ({
+  vast,
   duration,
   skipDuration,
   video,
@@ -62,28 +66,66 @@ export default ({
   version: __VERSION__,
   key: 'ad',
   apply: (player) => {
-    if (autoplay) {
-      bootstrap()
-    } else {
-      $.render(
-        $.create(
-          `div.${$.css({
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            'z-index': 999
-          })}`
-        ),
-        player.$root
-      ).onclick = function () {
-        ;(this as HTMLDivElement).remove()
-        bootstrap()
+    let adActive = Boolean(vast || video || image)
+    const onPlay = () => {
+      if (adActive) player.pause()
+    }
+    player.on('play', onPlay)
+    if (adActive) player.pause()
+
+    const finishGate = () => {
+      adActive = false
+      player.off('play', onPlay)
+      player.$root.removeAttribute('data-np-ad')
+    }
+
+    const start = (creative: {
+      video?: string
+      image?: string
+      duration: number
+      skipDuration?: number
+      target?: string
+      tracking?: VastTracking
+    }) => {
+      if (autoplay) {
+        bootstrap(creative)
+      } else {
+        $.render(
+          $.create(
+            `div.${$.css({
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              'z-index': 999
+            })}`
+          ),
+          player.$root
+        ).onclick = function () {
+          ;(this as HTMLDivElement).remove()
+          bootstrap(creative)
+        }
       }
     }
 
-    function bootstrap() {
+    function bootstrap(creative: {
+      video?: string
+      image?: string
+      duration: number
+      skipDuration?: number
+      target?: string
+      tracking?: VastTracking
+    }) {
+      const adDuration = Math.max(1, creative.duration)
+      const adSkip = creative.skipDuration
+      const tracking = creative.tracking
+      player.$root.setAttribute('data-np-ad', 'true')
+      player.pause()
+      fireVastUrls(tracking?.impression)
+      fireVastUrls(tracking?.start)
+      player.emit('adstart', { src: creative.video || creative.image })
+
       const $container = $.create(
         `div.${$.css({
           width: '100%',
@@ -109,18 +151,18 @@ export default ({
             : topRight
         }>
             ${
-              skipDuration
+              adSkip != null
                 ? `<div class=${area} skipDuration>${player.locales.get(
                     'Can be closed after %ss',
-                    skipDuration
+                    adSkip
                   )}</div>`
                 : ''
             }
 
-            <div class=${area} duration>${player.locales.get('%ss', duration)}</div>
+            <div class=${area} duration>${player.locales.get('%ss', adDuration)}</div>
 
             ${
-              video
+              creative.video
                 ? `
               <div class='${area} ${mute}' volume>
                 <svg width="1em" height="1.5em" viewBox="0 0 1024 1024" version="1.1">
@@ -139,67 +181,118 @@ export default ({
       const $duration = $container.querySelector<HTMLDivElement>(`.${area}[duration]`)!
       const $volume = $container.querySelector<HTMLDivElement>(`.${area}[volume]`)
 
-      if (video) {
+      if (creative.video) {
         instance = Player.make($container, {
           muted: true,
           autoplay: true,
           loop: true,
-          source: { src: video }
+          source: { src: creative.video }
         })
           .use(plugins || ([] as any))
           .create()
 
         $volume!.addEventListener('click', (e) => {
           e.preventDefault()
-          e.stopPropagation() // Prevent the click event from bubbling to the $container
-
+          e.stopPropagation()
           instance.isMuted ? instance.unmute() : instance.mute()
           $volume!.classList.toggle(mute)
         })
-      } else {
-        $container.style.background = `url(${image}) center center`
+      } else if (creative.image) {
+        $container.style.background = `url(${creative.image}) center center`
       }
       $.render($container, player.$root)
 
       let count = 0
+      const quartiles = { firstQuartile: false, midpoint: false, thirdQuartile: false }
 
-      const destroy = () => {
+      const destroy = (reason: 'complete' | 'skip') => {
         clearInterval(timer)
+        if (reason === 'skip') fireVastUrls(tracking?.skip)
+        else fireVastUrls(tracking?.complete)
+        player.emit(reason === 'skip' ? 'adskip' : 'adend', { seconds: count })
         instance?.destroy()
         $container.remove()
+        finishGate()
         player.play()
       }
 
-      //TODO: fix hotkey
       const timer = setInterval(() => {
-        if (skipDuration !== undefined) {
-          count++
+        count++
+        const ratio = count / adDuration
+        if (!quartiles.firstQuartile && ratio >= 0.25) {
+          quartiles.firstQuartile = true
+          fireVastUrls(tracking?.firstQuartile)
+        }
+        if (!quartiles.midpoint && ratio >= 0.5) {
+          quartiles.midpoint = true
+          fireVastUrls(tracking?.midpoint)
+        }
+        if (!quartiles.thirdQuartile && ratio >= 0.75) {
+          quartiles.thirdQuartile = true
+          fireVastUrls(tracking?.thirdQuartile)
+        }
 
-          if (skipDuration - count > 0) {
-            $skip!.innerText = player.locales.get('Can be closed after %ss', skipDuration - count)
+        if (adSkip !== undefined) {
+          if (adSkip - count > 0) {
+            $skip!.innerText = player.locales.get('Can be closed after %ss', adSkip - count)
           } else {
             $skip!.innerText = player.locales.get('Close')
             $skip!.onclick ??= () => {
               onSkip?.(count)
-              destroy()
+              destroy('skip')
             }
           }
         }
 
-        if (duration - count > 0) {
-          $duration.innerText = player.locales.get('%ss', duration - count)
+        if (adDuration - count > 0) {
+          $duration.innerText = player.locales.get('%ss', adDuration - count)
         } else {
-          destroy()
+          destroy('complete')
         }
       }, 1000)
 
-      if (target) {
+      if (creative.target) {
         $container.addEventListener('click', (e) => {
           if (!(e.target as HTMLElement).classList.contains(area)) {
-            window.open(target, '_blank')
+            fireVastUrls(tracking?.click)
+            window.open(creative.target, '_blank')
           }
         })
       }
     }
+
+    if (vast) {
+      loadVast(vast)
+        .then((parsed) => {
+          const src = video || parsed.mediaUrl
+          start({
+            video: src,
+            image,
+            duration: duration ?? parsed.duration ?? 10,
+            skipDuration: skipDuration ?? parsed.skipOffset,
+            target: target || parsed.clickThrough,
+            tracking: parsed.tracking
+          })
+        })
+        .catch((error) => {
+          finishGate()
+          player.emit('aderror', error)
+          player.play()
+        })
+      return
+    }
+
+    if (!video && !image) {
+      finishGate()
+      return
+    }
+
+    start({
+      video,
+      image,
+      duration: duration ?? 10,
+      skipDuration,
+      target
+    })
   }
 })

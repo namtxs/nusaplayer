@@ -44,7 +44,7 @@ Pass plugins to `.use([...])`. After `.create()` they are on `player.context`.
 - HLS, DASH, FLV / MPEG-TS, WebTorrent, Shaka
 - Controls, theme, screenshot, PiP, fullscreen
 - Keyboard shortcuts, captions (SRT / WebVTT), thumbnails
-- Playlist, Chromecast, AirPlay, ads, danmaku
+- Playlist, Chromecast, AirPlay, ads / VAST, danmaku
 - Fallback URLs when a stream fails
 - Indonesian and other UI languages
 - React wrapper

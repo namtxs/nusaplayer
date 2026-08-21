@@ -75,6 +75,7 @@ export default function (it: UIInterface) {
       document.activeElement?.getAttribute('contenteditable') ||
       (config.keyboard!.focused && !isFocused(player)) ||
       player.$root.classList.contains(locked) ||
+      player.$root.hasAttribute('data-np-ad') ||
       e.altKey ||
       e.ctrlKey ||
       e.metaKey ||
