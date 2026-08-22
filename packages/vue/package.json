@@ -1,0 +1,33 @@
+{
+  "name": "@nusaplayer/vue",
+  "version": "1.0.0",
+  "description": "Vue wrapper for NusaPlayer.",
+  "type": "module",
+  "main": "./dist/index.es.js",
+  "types": "./dist/src/index.d.ts",
+  "jsdelivr": "./dist/index.min.js",
+  "sideEffects": false,
+  "author": "NusaPlayer contributors",
+  "keywords": [
+    "nusaplayer-plugin",
+    "vue"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently -n es,dts \"vite build --watch\"  \"tsc --emitDeclarationOnly --watch\"",
+    "tsc": "tsc --noEmit && echo",
+    "build": "vite build && tsc --emitDeclarationOnly"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "peerDependencies": {
+    "@nusaplayer/core": ">=1.0.2",
+    "vue": ">=3.2"
+  },
+  "devDependencies": {
+    "@nusaplayer/core": "workspace:*",
+    "vue": "^3.5.13"
+  }
+}

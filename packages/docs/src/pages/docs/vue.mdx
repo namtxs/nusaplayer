@@ -1,0 +1,70 @@
+# @nusaplayer/vue
+
+Vue 3 wrapper around `Player.make`. Props match [@nusaplayer/react](/docs/react).
+
+```bash
+npm i @nusaplayer/core @nusaplayer/ui @nusaplayer/vue
+```
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import NusaPlayer from '@nusaplayer/vue'
+import type { VueNusaPlayerInstance } from '@nusaplayer/vue'
+import ui from '@nusaplayer/ui'
+import hls from '@nusaplayer/hls'
+
+const plugins = [
+  ui({
+    pictureInPicture: true,
+    screenshot: true,
+    keyboard: { global: true }
+  }),
+  hls({ forceHLS: true })
+]
+
+const playerRef = ref<VueNusaPlayerInstance | null>(null)
+const source = {
+  src: 'https://vjs.zencdn.net/v/oceans.mp4',
+  poster: 'https://vjs.zencdn.net/v/oceans.png',
+  title: "Disney's Oceans"
+}
+
+function onEvent(e: { type: string }) {
+  console.log(e.type)
+}
+</script>
+
+<template>
+  <NusaPlayer
+    ref="playerRef"
+    :plugins="plugins"
+    :source="source"
+    :autoplay="false"
+    :volume="0.8"
+    :on-event="onEvent"
+  />
+</template>
+```
+
+`source` may be a `Promise<Source>` — useful when the URL comes from an API.
+
+The instance is on `playerRef.value.player` (not the template ref itself).
+
+## Props
+
+Extends `PlayerOptions` except `source` is optional / thenable.
+
+| Prop | Type | Notes |
+| --- | --- | --- |
+| `plugins` | `PlayerPlugin[]` | Created **once** when the node mounts. Do not recreate the array on every render if you can avoid it. |
+| `source` | `Source \| Source[] \| Promise<Source \| Source[]>` | Calls `changeSource` when `src` changes. An array is tried in order if a URL fails. |
+| `playing` | `boolean` | Imperative play / pause |
+| `duration` | `number` | Seek to this many **milliseconds** on change |
+| `aspectRatio` | `number` | Default `9 / 16` (height / width padding trick) |
+| `onEvent` | `(e: PlayerEvent) => void` | Subscribes to all player events |
+| `ref` | `VueNusaPlayerInstance` | `ref.player` is the underlying instance |
+
+All other `PlayerOptions` (`muted`, `lang`, `isLive`, …) are forwarded to `make`.

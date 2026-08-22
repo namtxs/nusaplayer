@@ -15,6 +15,7 @@ export const DOCS_NAV: Array<{ href?: string; label: string }> = [
   { href: '/docs/ui/', label: 'UI' },
   { href: '/docs/danmaku/', label: 'Danmaku' },
   { href: '/docs/react/', label: 'React' },
+  { href: '/docs/vue/', label: 'Vue' },
   { href: '/docs/plugins/', label: 'Plugins' },
   { href: '/docs/plugins/playlist/', label: 'Playlist' },
   { href: '/docs/plugins/chromecast/', label: 'Chromecast' },

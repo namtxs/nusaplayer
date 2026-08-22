@@ -33,7 +33,8 @@ export default withMDX({
     '@nusaplayer/shaka',
     '@nusaplayer/torrent',
     '@nusaplayer/danmaku',
-    '@nusaplayer/react'
+    '@nusaplayer/react',
+    '@nusaplayer/vue'
   ],
   images: {
     unoptimized: true

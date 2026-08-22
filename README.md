@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-HTML5 video player. Plugins for HLS, DASH, FLV, danmaku, playlist, and React.
+HTML5 video player. Plugins for HLS, DASH, FLV, danmaku, playlist, React, and Vue.
 
 [Docs](https://nusaplayer.vercel.app/) · [Playground](https://nusaplayer.vercel.app/playground/) · [Streams](https://nusaplayer.vercel.app/player/)
 
@@ -47,7 +47,7 @@ Pass plugins to `.use([...])`. After `.create()` they are on `player.context`.
 - Playlist, Chromecast, AirPlay, ads / VAST, danmaku
 - Fallback URLs when a stream fails
 - Indonesian and other UI languages
-- React wrapper
+- React and Vue wrappers
 
 ## Packages
 
@@ -63,6 +63,7 @@ Pass plugins to `.use([...])`. After `.create()` they are on `player.context`.
 | `@nusaplayer/danmaku` | danmaku |
 | `@nusaplayer/plugins` | playlist, Cast, AirPlay, ads, VTT thumbs |
 | `@nusaplayer/react` | React |
+| `@nusaplayer/vue` | Vue 3 |
 | `@nusaplayer/full` | UMD bundle (core + ui + loaders) |
 
 UMD globals: `NusaPlayer`, `NusaUI`, `NusaHls`, `NusaDash`, `NusaMpegts`, `NusaShaka`, `NusaTorrent`, `NusaDanmaku`.
